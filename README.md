@@ -12,14 +12,17 @@ Reproduce real-data training: `python -m backend.real_training --download`. The 
 
 The app estimates hourly work, compares staffing plans, and simulates waiting requests. A manager reviews any plan. The app does not assign real employees or control aircraft.
 
-## What you can try
+## How to use the website
 
-1. Choose low, medium, or high demand for the seven-day planning window.
-2. See expected work by hour and the number of staff seats each department may need.
-3. Change service times or staff counts, then run the simulation again.
-4. Compare plans using the same simulated requests. See labor cost, waiting time, and unfinished work.
-5. Watch a replay: service requests arrive, wait for staff, then get served.
-6. Approve or reject a plan. The app saves that choice on this computer.
+1. Start the backend and website using the steps below.
+2. At the top, choose **Quiet**, **Normal**, or **Busy** demand. Click **Run Simulation**.
+3. Choose **Demand** to view the 7-day demand pattern and data source. Choose **Staffing** to see how many staff seats may be needed each hour.
+4. Choose **Live Floor** to watch sample service requests arrive, wait, and get served. Use **+ / −** to change the number of staff seats.
+5. Choose **Try a Plan** to change staff seats or service times. Click **Apply Changes & Run** to update results.
+6. Choose **Compare Plans** to compare cost, wait time, and unfinished work. Apron uses the same sample requests for each plan.
+7. Choose **Review & Approve** to enter a manager name and notes, then approve or reject the plan. The decision is saved on this computer.
+
+**More settings** has a random seed and demand scaling controls. Use the same seed to repeat a comparison. A staff seat means one qualified worker available at a time; the app does not assign named employees to shifts.
 
 Departments in this demo: Passenger Services, Ramp Operations, and Fuel Services. This is a **staffing** project. “Fuel Services” means planning staff for fuel requests. It does not plan how much fuel to load.
 
@@ -38,6 +41,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-desktop.txt
 cd frontend
 npm.cmd ci
+npm.cmd run dev
 cd ..
 powershell -ExecutionPolicy Bypass -File .\build-desktop.ps1
 ```
