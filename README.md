@@ -5,7 +5,7 @@ Apron is a local demo for planning staff at an FBO. An FBO is a business at an a
 
 The application defaults to a forecast trained and checked on generated synthetic history. The Demand page shows its held-out error beside a simple baseline and labels both as synthetic validation, not real-world accuracy. An optional JFK airline-activity proxy remains available for exploration; it is not Los Angeles, private aviation, or FBO traffic.
 
-Overview and Compare Plans show an ordinary-week profile against low, medium, and high event-week cases, with the staffing seat peaks for each case. Plan options also report same-demand costs and service outcomes. The assumption panel explains that scenarios are planning cases, not confidence intervals. Manager approval remains required.
+Demand shows ordinary-week and event-week profiles, with an expandable low/medium/high comparison. Staffing shows current coverage, peak needs and additional peak positions by department. Plan options also report same-demand costs and service outcomes. The assumption panel explains that scenarios are planning cases, not confidence intervals. Manager approval remains required.
 
 Synthetic data and task requests are generated deterministically from a fixed seed. JFK proxy settings remain optional. The sections below explain setup and shared simulation assumptions.
 
@@ -14,16 +14,15 @@ The app estimates hourly work, compares staffing plans, and simulates waiting re
 
 ## How to use the website
 
-1. Start the backend and website using the steps below.
-2. At the top, choose **Quiet**, **Normal**, or **Busy** demand. Click **Run Simulation**.
-3. Choose **Summary** to compare ordinary-week demand with all three event-week cases. Choose **Demand** to view hourly profiles and synthetic holdout accuracy. Choose **Staffing** to see required seats by hour.
-4. Choose **Live Floor** to watch sample service requests arrive, wait, and get served. Use **+ / −** to change the number of staff seats.
-5. Choose **Try a Plan** to change staff seats or service times. Click **Apply Changes & Run** to update results.
-6. Choose **Compare Plans** to compare cost, wait time, and unfinished work. Apron uses the same sample requests for each plan.
-7. Choose **Shift Planner** or **Stress Test**, set synthetic shift rules and disruptions, then build the baseline and event rosters. Compare coverage under the same surge, delay, and call-outs.
-8. Review the generated shifts and breaks. Enter a manager name and notes to approve or reject the roster; the decision is saved locally.
+1. Choose Quiet, Normal or Busy demand and click **Run Simulation**. Source, scaling and seed are under **Settings**.
+2. **Live Floor** shows staff positions, the waiting queue and average wait. Switch departments or try staff + / - and rerun.
+3. **Demand** compares ordinary and event weeks. Use day and volume filters; expand the scenario comparison for all three event levels.
+4. **Staffing** shows each department's current positions, peak requirement and extra positions needed. Edit counts or expand service-time settings.
+5. **Compare Plans** shows cost and waiting-time trade-offs from the queue engine. Department detail and model explanations are expandable.
+6. **Shifts & Stress** combines the incoming shift planner and disruption test. Set call-outs, extra arrivals and service delays; expand shift/rest/break rules if needed. Click **Build & Test Roster**. Compare ordinary/event roster coverage and costs, then expand the day-filtered shifts or department gaps.
+7. **Review & Approve** supports either coverage-plan review (`/api/decisions`) or event-roster review (`/api/staffing-decisions`). Changed settings require rebuilding before roster approval. Decisions and exports remain local; no workers are contacted.
 
-**More settings** has a random seed and demand scaling controls. Use the same seed to repeat a comparison. A staff seat means one qualified worker available at a time. Shift Planner uses synthetic employee IDs only; it never assigns real named employees.
+The interface is English-only. Source details, assumptions, forecast scores and the optional workflow guide remain available without filling the default screen. The floor still replays the queue simulation using continuous staff positions. Shift-stress metrics are a separate capacity calculation, not a replay of waits under shift breaks. Worker availability is assumed and IDs are fictional.
 
 Departments in this demo: Passenger Services, Ramp Operations, and Fuel Services. This is a **staffing** project. “Fuel Services” means planning staff for fuel requests. It does not plan how much fuel to load.
 
