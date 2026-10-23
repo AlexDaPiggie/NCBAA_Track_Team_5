@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import csv
-import math
+from dataclasses import dataclass
 from pathlib import Path
 
 from data_generation.synthetic import TASK_TYPES
@@ -19,35 +18,6 @@ class Worker:
     shift_start_hour: int
     shift_end_hour: int
     max_weekly_hours: int
-
-
-@dataclass(frozen=True)
-class Assignment:
-    hour_index: int
-    role: str
-    worker_id: str
-    assigned_hours: float = 1.0
-
-
-@dataclass(frozen=True)
-class HourResult:
-    hour_index: int
-    role: str
-    task_hours: float
-    available_workers: int
-    assigned_workers: tuple[str, ...]
-    covered_task_hours: float
-    uncovered_task_hours: float
-
-
-@dataclass(frozen=True)
-class StaffingPlan:
-    hourly: tuple[HourResult, ...]
-    assignments: tuple[Assignment, ...]
-    total_task_hours: float
-    covered_task_hours: float
-    uncovered_task_hours: float
-    assigned_labor_hours: float
 
 
 def load_workers(path: Path) -> list[Worker]:
@@ -75,6 +45,7 @@ def load_scenario(path: Path, scenario: str) -> list[dict[str, float | int]]:
             if row["scenario"] == scenario:
                 rows.append({
                     "hour_index": (int(row["day_index"]) - 1) * 24 + int(row["hour_local"]),
+                    "arrivals": int(row["arrivals"]),
                     **{task: float(row[f"{task}_task_hours"]) for task in TASK_TYPES},
                 })
     if not rows:
@@ -82,59 +53,10 @@ def load_scenario(path: Path, scenario: str) -> list[dict[str, float | int]]:
     return sorted(rows, key=lambda row: int(row["hour_index"]))
 
 
-def plan_staffing(
-    demand: list[dict[str, float | int]],
-    workers: list[Worker],
-    *,
-    absent_worker_ids: frozenset[str] = frozenset(),
-) -> StaffingPlan:
-    """Assign qualified workers to hourly task workload, within availability and hour caps.
-
-    The planner allocates whole workers for each one-hour bucket. This is a demo
-    heuristic, not a labor-compliant roster optimizer. Breaks and minimum rest
-    between shifts are not modeled.
-    """
-    weekly_used = {worker.worker_id: 0 for worker in workers}
-    worker_by_id = {worker.worker_id: worker for worker in workers}
-    hourly_results: list[HourResult] = []
-    assignments: list[Assignment] = []
-
-    for row in sorted(demand, key=lambda x: int(x["hour_index"])):
-        hour_index = int(row["hour_index"])
-        day = hour_index // 24 + 1
-        hour = hour_index % 24
-        for role in TASK_TYPES:
-            task_hours = float(row[role])
-            eligible = [w for w in workers if (
-                w.worker_id not in absent_worker_ids
-                and role in w.skills
-                and day in w.available_days
-                and w.shift_start_hour <= hour < w.shift_end_hour
-                and weekly_used[w.worker_id] < w.max_weekly_hours
-            )]
-            required = math.ceil(task_hours)
-            # Prefer workers with fewer assigned hours to spread workload.
-            eligible.sort(key=lambda w: (weekly_used[w.worker_id], w.worker_id))
-            chosen = eligible[:required]
-            for worker in chosen:
-                weekly_used[worker.worker_id] += 1
-                assignments.append(Assignment(hour_index, role, worker.worker_id))
-            labor = float(len(chosen))
-            covered = min(task_hours, labor)
-            hourly_results.append(HourResult(
-                hour_index, role, task_hours, len(eligible),
-                tuple(w.worker_id for w in chosen), covered,
-                max(0.0, task_hours - covered),
-            ))
-
-    return StaffingPlan(
-        hourly=tuple(hourly_results),
-        assignments=tuple(assignments),
-        total_task_hours=sum(item.task_hours for item in hourly_results),
-        covered_task_hours=sum(item.covered_task_hours for item in hourly_results),
-        uncovered_task_hours=sum(item.uncovered_task_hours for item in hourly_results),
-        assigned_labor_hours=float(len(assignments)),
-    )
+def load_task_assumptions(path: Path) -> dict[str, float]:
+    """Read estimated task hours per arrival from the assumptions CSV."""
+    with path.open(newline="", encoding="utf-8") as f:
+        return {row["task_type"]: float(row["hours_per_arrival"]) for row in csv.DictReader(f)}
 
 
 def _parse_days(value: str) -> frozenset[int]:

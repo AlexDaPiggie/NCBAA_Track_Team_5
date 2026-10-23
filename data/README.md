@@ -1,10 +1,12 @@
 # Dataset notes
 
-`processed/` contains reproducible demo CSVs generated with `python -m data_generation.build_dataset`. Run `python -m staffing.build_plan` to create `staffing_plan_event_medium.csv`.
+`processed/` contains reproducible demo CSVs generated with `python -m data_generation.build_dataset`. Run `python -m staffing.build_plan` to create `schedule_comparison.csv` and `schedule_metrics.csv`.
 
 - `hourly_demand.csv`: 168 hours each for an ordinary scenario and three event demand scenarios.
 - `worker_profiles.csv`: fictional worker roles, skills, availability and assumed weekly limits.
 - `task_assumptions.csv`: estimated task hours per arrival. These are placeholders, not measured FBO service times.
+- `schedule_metrics.csv`: baseline and recommended coverage summaries for ordinary, event, call-out and surge cases.
+- `schedule_comparison.csv`: shift assignments for each plan and case.
 
 ## Evidence and limitations
 
