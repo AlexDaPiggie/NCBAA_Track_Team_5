@@ -10,7 +10,7 @@ The app estimates hourly work, compares staffing plans, and simulates waiting re
 2. See expected work by hour and the number of staff seats each department may need.
 3. Change service times or staff counts, then run the simulation again.
 4. Compare plans using the same simulated requests. See labor cost, waiting time, and unfinished work.
-5. Play a visual replay of requests waiting and receiving service.
+5. Watch a replay: service requests arrive, wait for staff, then get served.
 6. Approve or reject a plan. The app saves that choice on this computer.
 
 Departments in this demo: Passenger Services, Ramp Operations, and Fuel Services. This is a **staffing** project. “Fuel Services” means planning staff for fuel requests. It does not plan how much fuel to load.
