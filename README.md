@@ -44,6 +44,16 @@ npm.cmd run dev
 
 Open http://127.0.0.1:5173. Keep both terminals open while using the app. To stop a server, press **Ctrl+C** in its terminal.
 
+### If simulation shows a 404
+
+The website reached a server, but it did not find Apron's simulation API. In Terminal 1, stop the server with **Ctrl+C**. From the project root, start the backend again:
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn backend.main:app --reload --port 8000
+```
+
+Check http://127.0.0.1:8000/docs. If the API page does not open, the backend is not running on the expected port. Keep it running, then refresh the website.
+
 ## Where things live
 
 - [frontend/src/main.tsx](frontend/src/main.tsx) — pages, controls, charts, and manager review.

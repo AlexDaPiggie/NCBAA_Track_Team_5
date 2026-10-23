@@ -3,6 +3,7 @@ import {createRoot} from 'react-dom/client';
 import {AreaChart,Area,XAxis,YAxis,Tooltip,ResponsiveContainer,CartesianGrid,LineChart,Line,Legend} from 'recharts';
 import './style.css';
 import DepartmentView from './DepartmentView';
+import {apiError} from './api';
 type Dept={department:string;staff:number;cost:number;average_wait:number;utilization:number;service_level:number;requests:number;delayed:number;unfinished_at_close:number};
 type Option={name:string;staffing:Record<string,number>;cost:number;average_wait:number;service_level:number;unfinished_at_close:number;departments:Dept[]};
 type Result={forecast:{hour:number;aircraft:number;passengers:number}[];requirements:{hour:number;department:string;required:number;next_staff_threshold:number;workload_minutes:number}[];options:Option[];provenance:string;training_report:null|{rows:number;train_rows:number;test_rows:number;metrics:Record<string,{mae:number;baseline_mae:number;rmse:number}>}};
@@ -17,10 +18,10 @@ function App(){
  const [result,setResult]=useState<Result|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[selected,setSelected]=useState('Balanced');
  const [manager,setManager]=useState(''),[notes,setNotes]=useState(''),[decision,setDecision]=useState<any>(null),[snapshot,setSnapshot]=useState<any>(null),[dirty,setDirty]=useState(false);
  const inputs={scenario,multiplier,seed,service_minutes:minutes,custom,forecast_mode:forecastMode};
- async function run(){setBusy(true);setError('');setDecision(null);try{const r=await fetch('/api/simulate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(inputs)});if(!r.ok)throw Error(await r.text());setResult(await r.json());setSnapshot(inputs);setDirty(false)}catch(e){setError(String(e))}finally{setBusy(false)}}
+ async function run(){setBusy(true);setError('');setDecision(null);try{const r=await fetch('/api/simulate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(inputs)});if(!r.ok)throw await apiError(r,'/api/simulate');setResult(await r.json());setSnapshot(inputs);setDirty(false)}catch(e){setError(String(e))}finally{setBusy(false)}}
  useEffect(()=>{void run()},[]);
  function changed(fn:()=>void){fn();setDirty(true);setDecision(null)}
- async function save(approved:boolean){setError('');try{const r=await fetch('/api/decisions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({inputs:snapshot,option:selected,manager,notes,approved})});if(!r.ok)throw Error(await r.text());setDecision(await r.json())}catch(e){setError(String(e))}}
+ async function save(approved:boolean){setError('');try{const r=await fetch('/api/decisions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({inputs:snapshot,option:selected,manager,notes,approved})});if(!r.ok)throw await apiError(r,'/api/decisions');setDecision(await r.json())}catch(e){setError(String(e))}}
  function download(){const url=URL.createObjectURL(new Blob([JSON.stringify(decision,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='staffing-decision.json';a.click();URL.revokeObjectURL(url)}
  const plan=result?.options.find(o=>o.name===selected)??result?.options[1];
  const demandChart=<div className="chart"><ResponsiveContainer width="100%" height="100%"><AreaChart data={result?.forecast}><defs><linearGradient id="blue" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#38a5f5" stopOpacity={.45}/><stop offset="100%" stopColor="#38a5f5" stopOpacity={0}/></linearGradient></defs><CartesianGrid strokeDasharray="3 3" vertical={false}/><XAxis dataKey="hour" label={{value:'Hours from planning window start',position:'insideBottom',offset:-5}}/><YAxis/><Tooltip/><Legend verticalAlign="top"/><Area name="Aircraft / hour" type="monotone" dataKey="aircraft" stroke="#1588dc" fill="url(#blue)"/><Area name="Passengers / hour" type="monotone" dataKey="passengers" stroke="#21a596" fill="none"/></AreaChart></ResponsiveContainer></div>;

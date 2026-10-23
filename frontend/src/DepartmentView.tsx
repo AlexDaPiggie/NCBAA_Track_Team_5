@@ -1,12 +1,13 @@
 import {useEffect,useMemo,useState} from 'react';
 import './department.css';
+import {apiError} from './api';
 type Event={id:number;arrival:number;start:number;end:number;seat:number};
 type Replay={traces:Record<string,Event[]>;staffing:Record<string,number>;forecast:{hour:number;passengers:number;aircraft:number;fuel_requests:number}[]};
 const departments=['Passenger Services','Ramp Operations','Fuel Services'];
 export default function DepartmentView({inputs,option,dirty,onStaffChange}:{inputs:unknown;option:string;dirty:boolean;onStaffChange:(department:string,delta:number)=>void}){
  const [data,setData]=useState<Replay|null>(null),[error,setError]=useState(''),[index,setIndex]=useState(0),[minute,setMinute]=useState(0),[playing,setPlaying]=useState(false),[speed,setSpeed]=useState(10),[loading,setLoading]=useState(true);
  const name=departments[index];
- useEffect(()=>{const controller=new AbortController();setLoading(true);setPlaying(false);setError('');setData(null);fetch('/api/replay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({inputs,option}),signal:controller.signal}).then(async r=>{if(!r.ok)throw Error(await r.text());return r.json()}).then(d=>{setData(d);setMinute(0)}).catch(e=>{if(e.name!=='AbortError')setError(String(e))}).finally(()=>{if(!controller.signal.aborted)setLoading(false)});return()=>controller.abort()},[inputs,option]);
+ useEffect(()=>{const controller=new AbortController();setLoading(true);setPlaying(false);setError('');setData(null);fetch('/api/replay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({inputs,option}),signal:controller.signal}).then(async r=>{if(!r.ok)throw await apiError(r,'/api/replay');return r.json()}).then(d=>{setData(d);setMinute(0)}).catch(e=>{if(e.name!=='AbortError')setError(String(e))}).finally(()=>{if(!controller.signal.aborted)setLoading(false)});return()=>controller.abort()},[inputs,option]);
  const events=data?.traces[name]??[];
  const end=Math.max(10080,...events.map(e=>e.end));
  useEffect(()=>{if(!playing)return;const timer=window.setInterval(()=>setMinute(t=>{if(t+.1*speed>=end){setPlaying(false);return end}return t+.1*speed}),100);return()=>clearInterval(timer)},[playing,speed,end]);
