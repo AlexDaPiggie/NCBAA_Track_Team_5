@@ -21,9 +21,12 @@ DEFAULTS = {'Passenger Services': Department(5, 1, 26),
             'Ramp Operations': Department(24, 2, 32),
             'Fuel Services': Department(30, 1, 35)}
 
-def forecast(scenario='Medium', multiplier=1.0):
-    """Planning profile, not a trained model or real event forecast."""
-    factor = {'Low': .65, 'Medium': 1., 'High': 1.5}[scenario] * multiplier
+def forecast(scenario='Medium', multiplier=1.0, week_type='event'):
+    """Synthetic planning profile; event multipliers are assumptions, not forecasts."""
+    if week_type not in ('ordinary', 'event'):
+        raise ValueError('week_type must be ordinary or event')
+    factor = (1.0 if week_type == 'ordinary' else
+              {'Low': 1.15, 'Medium': 1.4, 'High': 1.7}[scenario]) * multiplier
     rows = []
     for hour in range(168):
         day, clock = divmod(hour, 24)
@@ -103,14 +106,64 @@ def simulate(jobs, staffing, config, include_trace=False):
                 service_level=round(sum(r['service_level']*r['requests'] for r in results)/max(1,total),4),
                 unfinished_at_close=sum(r['unfinished_at_close'] for r in results))
 
+def scenario_summary(multiplier=1.0, config=None, forecast_mode='baseline', proxy_scale=.25):
+    """Compact, reproducible comparison of ordinary demand and three event cases."""
+    config = config or DEFAULTS
+    ordinary = forecast('Medium', multiplier, 'ordinary')
+    if forecast_mode == 'trained':
+        from .training import predict
+        values, _ = predict(ordinary)
+        for row, prediction in zip(ordinary, values):
+            for key, value in zip(['aircraft','passengers','fuel_requests'], prediction):
+                row[key] = round(float(value)*multiplier, 2)
+    elif forecast_mode == 'real_proxy':
+        from .real_training import predict
+        values, _ = predict()
+        for row, value in zip(ordinary, values):
+            aircraft = float(value)*multiplier*proxy_scale
+            row.update(aircraft=round(aircraft,2), passengers=round(aircraft*4.5,2),
+                       fuel_requests=round(aircraft*.65,2))
+    summaries = []
+    for scenario in ('Low', 'Medium', 'High'):
+        rows = forecast(scenario, multiplier, 'event')
+        factor = {'Low': 1.15, 'Medium': 1.4, 'High': 1.7}[scenario] * multiplier
+        if forecast_mode == 'trained':
+            values, _ = predict(rows)
+            for row, prediction in zip(rows, values):
+                for key, value in zip(['aircraft','passengers','fuel_requests'], prediction):
+                    row[key] = round(float(value)*factor, 2)
+        elif forecast_mode == 'real_proxy':
+            values, _ = predict()
+            for row, value in zip(rows, values):
+                aircraft = float(value)*factor*proxy_scale
+                row.update(aircraft=round(aircraft,2), passengers=round(aircraft*4.5,2),
+                           fuel_requests=round(aircraft*.65,2))
+        needs = requirements(rows, config)
+        summaries.append(dict(
+            scenario=scenario,
+            total_aircraft=round(sum(r['aircraft'] for r in rows)),
+            peak_aircraft_per_hour=round(max(r['aircraft'] for r in rows), 1),
+            peak_seats={name: max(x['required'] for x in needs if x['department'] == name)
+                        for name in config},
+            event_multiplier={'Low': 1.15, 'Medium': 1.4, 'High': 1.7}[scenario],
+            effective_multiplier=factor,
+        ))
+    return dict(
+        ordinary_total_aircraft=round(sum(r['aircraft'] for r in ordinary)),
+        ordinary_peak_aircraft_per_hour=round(max(r['aircraft'] for r in ordinary), 1),
+        scenarios=summaries,
+        provenance=f'{forecast_mode} planning profile; event multipliers are demo assumptions.',
+    )
+
+
 def run(scenario='Medium', multiplier=1., seed=42, config=None, custom=None, forecast_mode='baseline',proxy_scale=.25):
     config = config or DEFAULTS
-    rows = forecast(scenario, multiplier)
+    rows = forecast(scenario, multiplier, 'event')
     training_report = None
     if forecast_mode == 'trained':
         from .training import predict
         values, training_report = predict(rows)
-        factor = {'Low':.65,'Medium':1.,'High':1.5}[scenario]*multiplier
+        factor = {'Low':1.15,'Medium':1.4,'High':1.7}[scenario]*multiplier
         for row, prediction in zip(rows,values):
             for key, value in zip(['aircraft','passengers','fuel_requests'],prediction):
                 row[key] = round(float(value)*factor,2)
@@ -118,7 +171,7 @@ def run(scenario='Medium', multiplier=1., seed=42, config=None, custom=None, for
     if forecast_mode == 'real_proxy':
         from .real_training import predict
         values, training_report = predict()
-        factor={'Low':.65,'Medium':1.,'High':1.5}[scenario]*multiplier*proxy_scale
+        factor={'Low':1.15,'Medium':1.4,'High':1.7}[scenario]*multiplier*proxy_scale
         for row,value in zip(rows,values):
             aircraft=float(value)*factor
             row.update(aircraft=round(aircraft,2),passengers=round(aircraft*4.5,2),
@@ -132,7 +185,23 @@ def run(scenario='Medium', multiplier=1., seed=42, config=None, custom=None, for
         options.append(dict(name=label, staffing=staffing, **simulate(jobs,staffing,config)))
     if custom:
         options.append(dict(name='Manager Plan', staffing=custom, **simulate(jobs,custom,config)))
-    return dict(forecast=rows, requirements=needs, options=options, seed=seed,
+    ordinary_rows = forecast('Medium', multiplier, 'ordinary')
+    if forecast_mode == 'trained':
+        from .training import predict
+        ordinary_values, _ = predict(ordinary_rows)
+        for row, prediction in zip(ordinary_rows, ordinary_values):
+            for key, value in zip(['aircraft','passengers','fuel_requests'], prediction):
+                row[key] = round(float(value)*multiplier, 2)
+            row['provenance'] = 'trained synthetic-history model; ordinary-week profile assumption'
+    elif forecast_mode == 'real_proxy':
+        from .real_training import predict
+        ordinary_values, _ = predict()
+        for row, value in zip(ordinary_rows, ordinary_values):
+            aircraft = float(value)*multiplier*proxy_scale
+            row.update(aircraft=round(aircraft,2), passengers=round(aircraft*4.5,2),
+                       fuel_requests=round(aircraft*.65,2),
+                       provenance='JFK airline-departure pattern; ordinary FBO scale is an assumption')
+    return dict(forecast=rows, ordinary_forecast=ordinary_rows, requirements=needs, options=options, seed=seed,
                 assumptions={name:asdict(dept) for name,dept in config.items()},
                 training_report=training_report, forecast_mode=forecast_mode,
                 provenance=('Real JFK airline departure model; FBO scale and service demand are assumptions' if forecast_mode=='real_proxy' else 'Synthetic history; trained regression demo, not real-world validated' if training_report else 'Synthetic data; transparent planning profile, not trained ML'))

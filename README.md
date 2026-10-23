@@ -1,13 +1,13 @@
 # Apron · FBO Staffing Lab
 
 Apron is a local demo for planning staff at an FBO. An FBO is a business at an airport that serves private and general aviation aircraft.
-## Latest: real flight patterns and clearer English interface
+## Latest: synthetic event-week planning comparison
 
-The application now defaults to a fitted **real-data aircraft-activity proxy** using observed 2013 JFK airline departures from nycflights13. It does not present those departures as FBO arrivals. Passenger/fuel ratios, FBO scaling and service assumptions remain explicit. See [DATA_SOURCES.md](DATA_SOURCES.md) for the source, downloaded schema, cleaning audit, training split and exact held-out results. The fitted model has similar error to the simple baseline and does not outperform it.
+The application defaults to a forecast trained and checked on generated synthetic history. The Demand page shows its held-out error beside a simple baseline and labels both as synthetic validation, not real-world accuracy. An optional JFK airline-activity proxy remains available for exploration; it is not Los Angeles, private aviation, or FBO traffic.
 
-The UI remains English only. Menus use simpler names (Live Floor, Try a Plan, Compare Plans); text and metrics are larger; technical settings, formulas and detailed scores are collapsible. The floor focuses on department staff and queue information instead of also showing a second row of weekly totals.
+Overview and Compare Plans show an ordinary-week profile against low, medium, and high event-week cases, with the staffing seat peaks for each case. Plan options also report same-demand costs and service outcomes. The assumption panel explains that scenarios are planning cases, not confidence intervals. Manager approval remains required.
 
-Reproduce real-data training: `python -m backend.real_training --download`. The model, hourly aggregate and holdout predictions are included in source; the large raw CSV is not. Both synthetic modes remain available separately. The sections below explain setup and the shared simulation assumptions.
+Synthetic data and task requests are generated deterministically from a fixed seed. JFK proxy settings remain optional. The sections below explain setup and shared simulation assumptions.
 
 
 The app estimates hourly work, compares staffing plans, and simulates waiting requests. A manager reviews any plan. The app does not assign real employees or control aircraft.
@@ -16,21 +16,22 @@ The app estimates hourly work, compares staffing plans, and simulates waiting re
 
 1. Start the backend and website using the steps below.
 2. At the top, choose **Quiet**, **Normal**, or **Busy** demand. Click **Run Simulation**.
-3. Choose **Demand** to view the 7-day demand pattern and data source. Choose **Staffing** to see how many staff seats may be needed each hour.
+3. Choose **Summary** to compare ordinary-week demand with all three event-week cases. Choose **Demand** to view hourly profiles and synthetic holdout accuracy. Choose **Staffing** to see required seats by hour.
 4. Choose **Live Floor** to watch sample service requests arrive, wait, and get served. Use **+ / −** to change the number of staff seats.
 5. Choose **Try a Plan** to change staff seats or service times. Click **Apply Changes & Run** to update results.
 6. Choose **Compare Plans** to compare cost, wait time, and unfinished work. Apron uses the same sample requests for each plan.
-7. Choose **Review & Approve** to enter a manager name and notes, then approve or reject the plan. The decision is saved on this computer.
+7. Choose **Shift Planner** or **Stress Test**, set synthetic shift rules and disruptions, then build the baseline and event rosters. Compare coverage under the same surge, delay, and call-outs.
+8. Review the generated shifts and breaks. Enter a manager name and notes to approve or reject the roster; the decision is saved locally.
 
-**More settings** has a random seed and demand scaling controls. Use the same seed to repeat a comparison. A staff seat means one qualified worker available at a time; the app does not assign named employees to shifts.
+**More settings** has a random seed and demand scaling controls. Use the same seed to repeat a comparison. A staff seat means one qualified worker available at a time. Shift Planner uses synthetic employee IDs only; it never assigns real named employees.
 
 Departments in this demo: Passenger Services, Ramp Operations, and Fuel Services. This is a **staffing** project. “Fuel Services” means planning staff for fuel requests. It does not plan how much fuel to load.
 
 ## Data and limits
 
-The default aircraft activity model uses observed 2013 JFK airline departures. This is a proxy, not FBO arrival data. Passenger counts, fuel demand, workers and service requests remain assumptions or synthetic. The synthetic-only models are available separately. Neither mode has been validated for real FBO operations.
+The default aircraft activity model is trained on generated synthetic history. JFK airline departures are available only as an optional proxy and are not FBO or Los Angeles data. Passenger counts, fuel demand, workers and service requests remain assumptions or synthetic. No mode has been validated for real FBO operations.
 
-Service times, wages, staffing minimums, passenger counts, and demand levels are assumptions. They are not verified FBO rules or Super Bowl forecasts. The simulation does not model breaks, fatigue, staff absences, travel between tasks, or aircraft-task safety rules. Ask an FBO expert to review assumptions before treating results as realistic.
+Service times, wages, staffing minimums, passenger counts, event multipliers, break durations, maximum hours, and rest periods are assumptions. They are not verified FBO rules or Super Bowl forecasts. Low, medium, and high are planning cases, not confidence intervals. Forecast scores come from generated holdout data and are not real-world accuracy. Shift plans use synthetic qualified workers who are assumed available; the model does not cover actual employee availability, fatigue, travel between tasks, or aircraft-task safety rules. Call-outs, arrival surges, and longer service times are synthetic stress inputs. Ask an FBO expert to review assumptions before treating results as realistic.
 
 ## Desktop program on Windows
 
@@ -85,11 +86,23 @@ Check http://127.0.0.1:8000/docs. If the API page does not open, the backend is 
 
 - [frontend/src/main.tsx](frontend/src/main.tsx) — pages, controls, charts, and manager review.
 - [frontend/src/DepartmentView.tsx](frontend/src/DepartmentView.tsx) — animated request and staff-seat replay.
-- [backend/main.py](backend/main.py) — API for simulations, replay, and saved decisions.
+- [backend/main.py](backend/main.py) — API for simulations, replay, staffing plans, and manager decisions.
 - [backend/model.py](backend/model.py) — demand, staffing needs, and waiting-line simulation.
+- [backend/scheduling.py](backend/scheduling.py) — synthetic shift roster, break capacity, rest/hour limits, and disruption comparison.
 - [backend/training.py](backend/training.py) — train and measure the demo forecast model.
 - [backend/data](backend/data) — synthetic input files and trained model.
 - [backend/tests](backend/tests) — automated checks.
+
+## API summary
+
+- `POST /api/simulate` — runs the selected demand case and returns the hourly forecast, ordinary-week comparison profile, staffing requirements, plan metrics, provenance, and synthetic holdout report when the trained model is selected.
+- `GET /api/scenario-summary` — accepts `multiplier`, `forecast_mode`, `proxy_scale`, and JSON `service_minutes` query parameters; returns ordinary-week totals plus low/medium/high event-week totals, peak activity, and peak concurrent seats by department.
+- `POST /api/replay` — returns the seeded request trace for a selected staffing option.
+- `POST /api/staffing-plan` — accepts the simulation inputs plus shift length, break minutes, weekly hour cap, rest gap, and disruption settings; builds baseline/event rosters and evaluates both under the same call-outs, arrival surge, and service delay.
+- `POST /api/staffing-decisions` — recomputes and saves manager approval or rejection for a staffing roster.
+- `POST /api/decisions` — stores a manager's approve/reject decision locally for a simulation snapshot.
+
+Interactive request and response schemas are available at `http://127.0.0.1:8000/docs` while the backend is running.
 
 ## Useful commands
 
