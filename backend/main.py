@@ -18,9 +18,10 @@ class SimulationInput(BaseModel):
     service_minutes: dict[str,float] = Field(default_factory=dict)
     custom: dict[str,int] | None = None
     forecast_mode: str = 'baseline'
+    proxy_scale: float = Field(.25,ge=.01,le=1)
 
 def calculate(body):
-    if body.forecast_mode not in ('baseline','trained'):
+    if body.forecast_mode not in ('baseline','trained','real_proxy'):
         raise HTTPException(422,'Unknown forecast mode')
     if body.scenario not in ('Low','Medium','High'):
         raise HTTPException(422,'Unknown scenario')
@@ -33,7 +34,7 @@ def calculate(body):
         raise HTTPException(422,'Supply all departments with qualified staffing between minimum and 100')
     config = {n:Department(body.service_minutes.get(n,d.minutes),d.minimum,d.wage,d.utilization,d.target_wait) for n,d in DEFAULTS.items()}
     try:
-        return run(body.scenario,body.multiplier,body.seed,config,body.custom,body.forecast_mode)
+        return run(body.scenario,body.multiplier,body.seed,config,body.custom,body.forecast_mode,body.proxy_scale)
     except FileNotFoundError:
         raise HTTPException(422,'Train the forecast first: python -m backend.training')
 

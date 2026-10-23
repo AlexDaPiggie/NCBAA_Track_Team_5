@@ -1,6 +1,14 @@
 # Apron · FBO Staffing Lab
 
 Apron is a local demo for planning staff at an FBO. An FBO is a business at an airport that serves private and general aviation aircraft.
+## Latest: real flight patterns and clearer English interface
+
+The application now defaults to a fitted **real-data aircraft-activity proxy** using observed 2013 JFK airline departures from nycflights13. It does not present those departures as FBO arrivals. Passenger/fuel ratios, FBO scaling and service assumptions remain explicit. See [DATA_SOURCES.md](DATA_SOURCES.md) for the source, downloaded schema, cleaning audit, training split and exact held-out results. The fitted model has similar error to the simple baseline and does not outperform it.
+
+The UI remains English only. Menus use simpler names (Live Floor, Try a Plan, Compare Plans); text and metrics are larger; technical settings, formulas and detailed scores are collapsible. The floor focuses on department staff and queue information instead of also showing a second row of weekly totals.
+
+Reproduce real-data training: `python -m backend.real_training --download`. The model, hourly aggregate and holdout predictions are included in source; the large raw CSV is not. Both synthetic modes remain available separately. The sections below explain setup and the shared simulation assumptions.
+
 
 The app estimates hourly work, compares staffing plans, and simulates waiting requests. A manager reviews any plan. The app does not assign real employees or control aircraft.
 
@@ -17,11 +25,26 @@ Departments in this demo: Passenger Services, Ramp Operations, and Fuel Services
 
 ## Data and limits
 
-All included demand, workers, and service requests are synthetic. The forecast model is trained and checked on synthetic data too. Demo accuracy scores do not show real-world accuracy.
+The default aircraft activity model uses observed 2013 JFK airline departures. This is a proxy, not FBO arrival data. Passenger counts, fuel demand, workers and service requests remain assumptions or synthetic. The synthetic-only models are available separately. Neither mode has been validated for real FBO operations.
 
 Service times, wages, staffing minimums, passenger counts, and demand levels are assumptions. They are not verified FBO rules or Super Bowl forecasts. The simulation does not model breaks, fatigue, staff absences, travel between tasks, or aircraft-task safety rules. Ask an FBO expert to review assumptions before treating results as realistic.
 
-## Run on Windows
+## Desktop program on Windows
+
+Create the Python environment, then install the desktop dependencies and build:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-desktop.txt
+cd frontend
+npm.cmd ci
+cd ..
+powershell -ExecutionPolicy Bypass -File .\build-desktop.ps1
+```
+
+Run `dist\ApronStaffingLab\ApronStaffingLab.exe`. Copy the entire program directory when sharing it. Edge WebView2 Runtime is required. No separate browser or backend terminal is needed. Approved decisions are stored locally under `%LOCALAPPDATA%\ApronStaffingLab`.
+
+## Development preview on Windows
 
 You need Python and Node.js installed. Open this folder in VS Code.
 

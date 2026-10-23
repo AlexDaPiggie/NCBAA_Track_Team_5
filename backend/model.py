@@ -103,7 +103,7 @@ def simulate(jobs, staffing, config, include_trace=False):
                 service_level=round(sum(r['service_level']*r['requests'] for r in results)/max(1,total),4),
                 unfinished_at_close=sum(r['unfinished_at_close'] for r in results))
 
-def run(scenario='Medium', multiplier=1., seed=42, config=None, custom=None, forecast_mode='baseline'):
+def run(scenario='Medium', multiplier=1., seed=42, config=None, custom=None, forecast_mode='baseline',proxy_scale=.25):
     config = config or DEFAULTS
     rows = forecast(scenario, multiplier)
     training_report = None
@@ -115,6 +115,14 @@ def run(scenario='Medium', multiplier=1., seed=42, config=None, custom=None, for
             for key, value in zip(['aircraft','passengers','fuel_requests'],prediction):
                 row[key] = round(float(value)*factor,2)
             row['provenance'] = 'trained regression on synthetic history; scenario scaling is an assumption'
+    if forecast_mode == 'real_proxy':
+        from .real_training import predict
+        values, training_report = predict()
+        factor={'Low':.65,'Medium':1.,'High':1.5}[scenario]*multiplier*proxy_scale
+        for row,value in zip(rows,values):
+            aircraft=float(value)*factor
+            row.update(aircraft=round(aircraft,2),passengers=round(aircraft*4.5,2),
+                fuel_requests=round(aircraft*.65,2),provenance='real JFK departure-pattern model; scaled proxy; passenger/fuel ratios assumed')
     needs = requirements(rows, config)
     jobs = requests(rows, seed, config)
     options = []
@@ -127,7 +135,7 @@ def run(scenario='Medium', multiplier=1., seed=42, config=None, custom=None, for
     return dict(forecast=rows, requirements=needs, options=options, seed=seed,
                 assumptions={name:asdict(dept) for name,dept in config.items()},
                 training_report=training_report, forecast_mode=forecast_mode,
-                provenance=('Synthetic history; trained regression demo, not real-world validated' if training_report else 'Synthetic data; transparent planning profile, not trained ML'))
+                provenance=('Real JFK airline departure model; FBO scale and service demand are assumptions' if forecast_mode=='real_proxy' else 'Synthetic history; trained regression demo, not real-world validated' if training_report else 'Synthetic data; transparent planning profile, not trained ML'))
 
 def generate_data():
     DATA.mkdir(exist_ok=True)

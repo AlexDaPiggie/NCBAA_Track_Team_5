@@ -12,3 +12,4 @@ build/
 .env
 .env.*
 *.log
+backend/data/raw/

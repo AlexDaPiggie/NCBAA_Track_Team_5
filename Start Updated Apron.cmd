@@ -1,6 +1,8 @@
 @echo off
 cd /d "%~dp0"
-if exist "dist\department-view\ApronStaffingLab\ApronStaffingLab.exe" (
+if exist "dist\real-data\ApronStaffingLab\ApronStaffingLab.exe" (
+    start "" "dist\real-data\ApronStaffingLab\ApronStaffingLab.exe"
+) else if exist "dist\department-view\ApronStaffingLab\ApronStaffingLab.exe" (
     start "" "dist\department-view\ApronStaffingLab\ApronStaffingLab.exe"
 ) else if exist "dist\ApronStaffingLab\ApronStaffingLab.exe" (
     start "" "dist\ApronStaffingLab\ApronStaffingLab.exe"
