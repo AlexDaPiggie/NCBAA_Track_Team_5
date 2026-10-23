@@ -1,4 +1,0 @@
-task_type,hours_per_arrival,assumption_status
-ramp,0.75,unvalidated_demo_assumption
-customer_service,0.35,unvalidated_demo_assumption
-baggage,0.25,unvalidated_demo_assumption

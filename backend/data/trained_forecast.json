@@ -1,0 +1,84 @@
+{
+  "coefficients": [
+    [
+      1.1724126002138484,
+      5.091662319252553,
+      0.7679431662071861
+    ],
+    [
+      4.04487385371598,
+      18.042371707595954,
+      2.64158551097321
+    ],
+    [
+      5.241326907221939,
+      23.589010842181004,
+      3.4485512445800426
+    ],
+    [
+      -0.013764455340561923,
+      -0.046854141012575366,
+      -0.03686973812432749
+    ],
+    [
+      0.06866488759353645,
+      0.5187259179724852,
+      0.02441994950607369
+    ],
+    [
+      1.253810951157582,
+      5.9100923415154885,
+      0.8562082537858369
+    ],
+    [
+      4.320476939274677,
+      19.757023703972717,
+      3.1318862066017714
+    ],
+    [
+      4.643304665879712,
+      21.131373751990722,
+      2.8361869577735863
+    ]
+  ],
+  "report": {
+    "model": "Ridge regression, alpha=0.1; eight calendar/event features",
+    "dataset_provenance": [
+      "synthetic generated training history; not observed aviation data"
+    ],
+    "real_world_validated": false,
+    "rows": 4320,
+    "train_rows": 3456,
+    "test_rows": 864,
+    "train_end": "2025-05-29 23:00:00",
+    "test_start": "2025-05-30 00:00:00",
+    "split": "chronological first 80% train / final 20% holdout; then refit on all rows for inference",
+    "metrics": {
+      "aircraft": {
+        "mae": 1.451138284230017,
+        "baseline_mae": 1.5198366769547325,
+        "rmse": 1.8799085509099909
+      },
+      "passengers": {
+        "mae": 7.270621344838021,
+        "baseline_mae": 7.544737011316872,
+        "rmse": 9.578258857580526
+      },
+      "fuel_requests": {
+        "mae": 1.1823013313560233,
+        "baseline_mae": 1.2336516203703705,
+        "rmse": 1.5264746083411658
+      }
+    },
+    "feature_names": [
+      "intercept",
+      "morning",
+      "evening",
+      "weekday_sin",
+      "weekday_cos",
+      "event",
+      "event_morning",
+      "event_evening"
+    ]
+  }
+}
