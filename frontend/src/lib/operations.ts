@@ -209,6 +209,12 @@ export function capacitySeries(mission:Mission,crisis:Crisis=noCrisis){
     return {time:clock(start),minute:start,demand,capacity};
   });
 }
+export function observedLaxArrivalSeries(day:number){
+  return laxArrivalProfiles[day].halfHours.map((arrivals,index)=>{
+    const minute=index*30;
+    return {time:clock(minute),minute,arrivals};
+  });
+}
 export function arrivalDemandSeries(day:number){
   const profile=laxArrivalProfiles[day];
   return Array.from({length:17},(_,i)=>{

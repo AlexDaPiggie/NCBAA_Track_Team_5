@@ -93,6 +93,9 @@
 :root[data-theme="light"] .ops-chart-summary>div{background:#d3deea}
 :root[data-theme="light"] .ops-chart-legend i.cyan{background:#087b98}
 :root[data-theme="light"] .ops-chart-legend i.green{border-color:#176c49}
+:root[data-theme="light"] .ops-arrivals-toggle-track{background:#9aaaba}
+:root[data-theme="light"] .ops-arrivals-toggle[aria-checked=true] .ops-arrivals-toggle-track{background:#176c49}
+:root[data-theme="light"] .ops-arrivals-toggle-track>span{background:#fff}
 :root[data-theme="light"] .ops-mini-badge{border-color:#c4d5e4;color:#52677d}
 :root[data-theme="light"] .ops-flight-row{border-color:#e0e8f0}
 :root[data-theme="light"] .ops-aircraft-symbol{background:#e7f4f9;border-color:#bcdae7;color:#087b98}

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createMission,applyCrisis,scheduleTasks,evaluateOriginal,recoveryChanges,workerAvailable,noCrisis,stackedCrisis,NOW,defaultTaskRules,arrivalDemandSeries} from '../src/lib/operations.ts';
+import {createMission,applyCrisis,scheduleTasks,evaluateOriginal,recoveryChanges,workerAvailable,noCrisis,stackedCrisis,NOW,defaultTaskRules,arrivalDemandSeries,observedLaxArrivalSeries} from '../src/lib/operations.ts';
 import {laxArrivalProfiles} from '../src/lib/lax-arrivals.ts';
 import {sampleDemand} from '../src/demand-csv.ts';
 
@@ -44,6 +44,13 @@ test('arrival-demand chart buckets arrivals and modeled crew demand into half-ho
   assert.equal(series.reduce((sum,row)=>sum+row.arrivals,0),laxArrivalProfiles[mission.day].halfHours.slice(24,41).reduce((sum,n)=>sum+n,0));
   assert.deepEqual(mission,originalMission);
   assert.ok(series.some(row=>row.demand>0));
+});
+test('observed LAX arrivals cover the full 24-hour chart timeline',()=>{
+  const series=observedLaxArrivalSeries(5);
+  assert.equal(series.length,48);
+  assert.equal(series[0].time,'00:00');
+  assert.equal(series.at(-1).time,'23:30');
+  assert.deepEqual(series.map(row=>row.arrivals),laxArrivalProfiles[5].halfHours);
 });
 test('crisis adds aircraft, shifts arrival windows, and retains original assignments',()=>{
   const mission=createMission(),original=scheduleTasks(mission),affected=applyCrisis(mission,stackedCrisis);
