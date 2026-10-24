@@ -1,0 +1,14 @@
+export type Department={department:string;staff:number;average_wait:number;utilization:number;service_level:number;delayed:number;unfinished_at_close:number};
+export type Option={name:string;staffing:Record<string,number>;cost:number;average_wait:number;service_level:number;unfinished_at_close:number;departments:Department[]};
+export type Inputs={scenario:string;multiplier:number;seed:number;service_minutes:Record<string,number>;custom:Record<string,number>;forecast_mode:string;proxy_scale:number};
+export type Result={forecast:{hour:number;aircraft:number;passengers:number}[];ordinary_forecast:{hour:number;aircraft:number;passengers:number}[];requirements:{hour:number;department:string;required:number;next_staff_threshold:number}[];options:Option[];forecast_mode:string;training_report:null|{rows:number;train_rows:number;test_rows:number;metrics:Record<string,{mae:number;baseline_mae:number}>}};
+export type Decision={id:number;approved:boolean;[key:string]:unknown};
+export type ScenarioSummary={ordinary_total_aircraft:number;ordinary_peak_aircraft_per_hour:number;provenance:string;scenarios:{scenario:string;total_aircraft:number;peak_aircraft_per_hour:number;peak_seats:Record<string,number>;event_multiplier:number;effective_multiplier:number}[]};
+export type ShiftSettings={shift_hours:number;break_minutes:number;max_weekly_hours:number;minimum_rest_hours:number;absences:number;surge_percent:number;service_delay_percent:number;disruption_day:number;disruption_start:number;disruption_hours:number};
+export const shiftDefaults:ShiftSettings={shift_hours:8,break_minutes:30,max_weekly_hours:40,minimum_rest_hours:8,absences:2,surge_percent:50,service_delay_percent:25,disruption_day:5,disruption_start:15,disruption_hours:4};
+export type RosterRequest=ShiftSettings&{inputs:Inputs};
+export type Shift={employee_id:string;department:string;day:number;start_hour:number;end_hour:number;week_start_hour:number;week_end_hour:number;shift_hours:number;break_start:number;break_end:number;break_minutes:number;qualification:string;provenance:string};
+export type DepartmentCoverage={department:string;workers:number;shifts:number;scheduled_labor_hours:number;estimated_labor_cost:number;uncovered_seat_hours:number;peak_uncovered_seats:number;unfilled_roster_slots:number;absent_workers:number;overtime_hours:number};
+export type RosterMetrics={departments:DepartmentCoverage[];workers:number;shifts:number;scheduled_labor_hours:number;estimated_labor_cost:number;coverage_percent:number;uncovered_seat_hours:number;unfilled_roster_slots:number;overtime_hours:number;absences:number;surge_percent:number;service_delay_percent:number;disruption_window:{day:number;start_hour:number;hours:number}};
+export type Roster={metrics:RosterMetrics;shifts:Shift[]};
+export type StaffingPlan={baseline:Roster;proposed:Roster;assumptions:Record<string,unknown>;provenance:string;simulation:Result;scenario_summary:ScenarioSummary};
