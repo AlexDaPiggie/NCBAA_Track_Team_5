@@ -37,6 +37,56 @@ def forecast(scenario='Medium', multiplier=1.0, week_type='event'):
                          provenance='synthetic planning baseline'))
     return rows
 
+def aggregate_four_hour_blocks(rows):
+    """Aggregate a complete, ordered 168-hour profile into 42 additive blocks.
+
+    Counts are summed over each four-hour interval. This describes block workload;
+    it does not preserve within-block peaks. Hourly data remains the source of truth.
+    """
+    if len(rows) != 168 or [row.get('hour') for row in rows] != list(range(168)):
+        raise ValueError('Expected 168 ordered hourly rows covering one seven-day week')
+    additive = ('aircraft', 'passengers', 'fuel_requests')
+    blocks = []
+    for block_index in range(42):
+        start_hour = block_index * 4
+        hours = rows[start_hour:start_hour + 4]
+        block = dict(
+            block=block_index,
+            day=block_index // 6 + 1,
+            block_in_day=block_index % 6,
+            start_hour=start_hour,
+            end_hour=start_hour + 4,
+            start_clock=f'{start_hour % 24:02d}:00',
+            end_clock=f'{(start_hour + 4) % 24:02d}:00',
+            provenance=hours[0].get('provenance', 'synthetic planning profile'),
+        )
+        for key in additive:
+            block[key] = round(sum(float(row[key]) for row in hours), 2)
+        blocks.append(block)
+    return blocks
+
+def block_requirements(blocks, config):
+    """Calculate average block staffing capacity from four-hour workload totals.
+
+    The result is a planning approximation: intra-block peaks are intentionally
+    not inferred from aggregated values. Use hourly requirements when those matter.
+    """
+    result = []
+    drivers = {'Passenger Services': 'passengers', 'Ramp Operations': 'aircraft',
+               'Fuel Services': 'fuel_requests'}
+    for block in blocks:
+        for name, dept in config.items():
+            demand = block[drivers[name]]
+            workload = demand * dept.minutes
+            capacity = 4 * 60 * dept.utilization
+            staff = max(dept.minimum, math.ceil(workload / capacity))
+            result.append(dict(block=block['block'], day=block['day'],
+                               block_in_day=block['block_in_day'], department=name,
+                               demand=demand, workload_minutes=round(workload, 2),
+                               required=staff,
+                               next_staff_threshold=round(staff * capacity / dept.minutes, 2)))
+    return result
+
 def requirements(rows, config):
     result = []
     for row in rows:
@@ -201,7 +251,16 @@ def run(scenario='Medium', multiplier=1., seed=42, config=None, custom=None, for
             row.update(aircraft=round(aircraft,2), passengers=round(aircraft*4.5,2),
                        fuel_requests=round(aircraft*.65,2),
                        provenance='JFK airline-departure pattern; ordinary FBO scale is an assumption')
-    return dict(forecast=rows, ordinary_forecast=ordinary_rows, requirements=needs, options=options, seed=seed,
+    four_hour_rows = aggregate_four_hour_blocks(rows)
+    ordinary_four_hour_rows = aggregate_four_hour_blocks(ordinary_rows)
+    four_hour_needs = block_requirements(four_hour_rows, config)
+    ordinary_four_hour_needs = block_requirements(ordinary_four_hour_rows, config)
+    return dict(forecast=rows, ordinary_forecast=ordinary_rows,
+                four_hour_forecast=four_hour_rows,
+                ordinary_four_hour_forecast=ordinary_four_hour_rows,
+                four_hour_requirements=four_hour_needs,
+                ordinary_four_hour_requirements=ordinary_four_hour_needs,
+                requirements=needs, options=options, seed=seed,
                 assumptions={name:asdict(dept) for name,dept in config.items()},
                 training_report=training_report, forecast_mode=forecast_mode,
                 provenance=('Real JFK airline departure model; FBO scale and service demand are assumptions' if forecast_mode=='real_proxy' else 'Synthetic history; trained regression demo, not real-world validated' if training_report else 'Synthetic data; transparent planning profile, not trained ML'))
@@ -209,6 +268,8 @@ def run(scenario='Medium', multiplier=1., seed=42, config=None, custom=None, for
 def generate_data():
     DATA.mkdir(exist_ok=True)
     pd.DataFrame(forecast()).to_csv(DATA/'synthetic_hourly_demand.csv',index=False)
+    pd.DataFrame(aggregate_four_hour_blocks(forecast())).to_csv(
+        DATA/'synthetic_four_hour_demand.csv', index=False)
     pd.DataFrame([dict(employee_id=f'{i}-{j}',qualification=name,available_hours=40,
                        hourly_wage=dept.wage,provenance='synthetic')
                   for i,(name,dept) in enumerate(DEFAULTS.items()) for j in range(30)]).to_csv(DATA/'synthetic_employees.csv',index=False)

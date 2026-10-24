@@ -121,6 +121,14 @@ def decide_staffing_plan(body: StaffingDecisionInput):
         record['id'] = cursor.lastrowid
     return record
 
+@app.post('/api/schedule')
+def schedule(body: SimulationInput):
+    if body.scenario != 'Medium':
+        raise HTTPException(422, 'The synthetic shift planner currently supports the Medium scenario only')
+    result = calculate(body)
+    from .scheduler import plan
+    return plan(result['requirements'])
+
 class ReplayInput(BaseModel):
     inputs: SimulationInput
     option: str = 'Balanced'

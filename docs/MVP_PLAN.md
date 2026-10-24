@@ -50,6 +50,14 @@ The current app uses React, TypeScript, and Vite for the website, with FastAPI/P
 - Expose typed API contracts; keep optimization and metrics on backend if backend exists.
 - Acceptance: one command or documented local steps launch a complete end-to-end flow.
 
+#### Phase 3 implementation status
+
+- Implemented in the existing React, TypeScript, Vite, and FastAPI stack. The app entry now mounts the current six-page staffing workflow from `frontend/src/App.tsx`.
+- The dashboard connects demand/scenario controls, hourly staffing needs, queue-plan comparisons, roster stress testing, and local manager approval to backend endpoints. Typed frontend payloads are in `frontend/src/plannerTypes.ts`.
+- `/api/staffing-plan` calculates baseline and event rosters using the same selected scenario and disruption inputs. `/api/staffing-decisions` records a manager's approve/reject decision locally. `/api/schedule` remains available for the legacy synthetic shift assignment.
+- The API and frontend entry merge conflicts were resolved so the app can import and launch. README run steps and endpoint notes now match the active UI.
+- Verification: `npm run build` in `frontend/` passes. Backend integration tests were not run in this environment because the `python` command is unavailable; rerun them from the configured project virtual environment during Phase 4.
+
 ### Phase 4 — hardening and demo (hours 32–48)
 
 - Test the full manager workflow and explain failures/infeasible scenarios.
@@ -66,6 +74,20 @@ The current app uses React, TypeScript, and Vite for the website, with FastAPI/P
 5. Disruption engine and fair comparative metrics.
 6. API contracts and approval-state handling.
 7. UI, README, and demo/pitch materials.
+
+## Stage 2 audit work — four-hour demand blocks
+
+The Stage 2 build step is additive: retain the existing 168 hourly series for current screens and queue simulation, and also expose 42 ordered four-hour blocks for the seven-day staffing plan. Each block sums aircraft, passenger, and fuel-request demand from its four source hours. Block staffing requirements use total workload divided by four hours of assumed per-person capacity, subject to the existing department minimum. Because aggregation removes within-block peaks, hourly requirements remain available and must be used wherever peak timing matters. The new block output follows the same synthetic/trained/JFK-proxy provenance as the hourly input; it does not turn the JFK proxy into LAX or FBO data.
+
+Task breakdown:
+
+1. Add strict validation for a complete ordered 168-hour week before aggregation.
+2. Derive day, block index, start/end hour, provenance, and additive demand totals.
+3. Calculate staffing requirements from four-hour capacity without changing hourly calculations.
+4. Return ordinary and event block profiles and staffing requirements from the existing model/API response.
+5. Add a reproducible four-hour CSV output to the existing data generator.
+
+The current `main.py` merge conflict is unresolved, so this stage does not alter its routes. The existing simulation route already returns the model result object; its new fields are additive. UI consumption and exact 42-cell screen behavior remain later work.
 
 ## Definition of done
 

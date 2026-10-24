@@ -24,6 +24,10 @@ The app estimates hourly work, compares staffing plans, and simulates waiting re
 
 The interface is English-only. Source details, assumptions, forecast scores and the optional workflow guide remain available without filling the default screen. The floor still replays the queue simulation using continuous staff positions. Shift-stress metrics are a separate capacity calculation, not a replay of waits under shift breaks. Worker availability is assumed and IDs are fictional.
 
+The first shift schedule is separate from the seat-based simulation and supports the **Medium** scenario. The roster in [backend/synthetic_roster.py](backend/synthetic_roster.py) is entirely synthetic. It contains stable example IDs, department qualifications, day and shift availability, and weekly hour caps. It uses 6am–2pm, 2pm–10pm, and 10pm–6am shifts, each 8 hours long, and requires 10 hours of rest. For each department and block, shift demand is the maximum hourly integer seat requirement in that block. A deterministic greedy assignment favors workers with fewer assigned hours, then stable worker IDs. Any uncovered slot is shown as **outside staff needed**; this is an estimate, not a confirmed hire or a real-world staffing recommendation.
+
+On **Compare Plans**, cost, wait, and unfinished work still come from the existing continuous seat simulation, which assumes all selected seats are staffed. Schedule coverage is a separate roster feasibility estimate and does not alter those simulation results. The prototype does not model breaks, preferences, location, labor rules, or validate the roster against real staffing conditions.
+
 Departments in this demo: Passenger Services, Ramp Operations, and Fuel Services. This is a **staffing** project. “Fuel Services” means planning staff for fuel requests. It does not plan how much fuel to load.
 
 ## Data and limits
@@ -83,11 +87,12 @@ Check http://127.0.0.1:8000/docs. If the API page does not open, the backend is 
 
 ## Where things live
 
-- [frontend/src/main.tsx](frontend/src/main.tsx) — pages, controls, charts, and manager review.
+- [frontend/src/App.tsx](frontend/src/App.tsx) — pages, controls, charts, and manager review.
 - [frontend/src/DepartmentView.tsx](frontend/src/DepartmentView.tsx) — animated request and staff-seat replay.
 - [backend/main.py](backend/main.py) — API for simulations, replay, staffing plans, and manager decisions.
 - [backend/model.py](backend/model.py) — demand, staffing needs, and waiting-line simulation.
 - [backend/scheduling.py](backend/scheduling.py) — synthetic shift roster, break capacity, rest/hour limits, and disruption comparison.
+- [backend/scheduler.py](backend/scheduler.py) and [backend/synthetic_roster.py](backend/synthetic_roster.py) — shift assignment algorithm and reviewable synthetic roster.
 - [backend/training.py](backend/training.py) — train and measure the demo forecast model.
 - [backend/data](backend/data) — synthetic input files and trained model.
 - [backend/tests](backend/tests) — automated checks.
@@ -98,6 +103,7 @@ Check http://127.0.0.1:8000/docs. If the API page does not open, the backend is 
 - `GET /api/scenario-summary` — accepts `multiplier`, `forecast_mode`, `proxy_scale`, and JSON `service_minutes` query parameters; returns ordinary-week totals plus low/medium/high event-week totals, peak activity, and peak concurrent seats by department.
 - `POST /api/replay` — returns the seeded request trace for a selected staffing option.
 - `POST /api/staffing-plan` — accepts the simulation inputs plus shift length, break minutes, weekly hour cap, rest gap, and disruption settings; builds baseline/event rosters and evaluates both under the same call-outs, arrival surge, and service delay.
+- `POST /api/schedule` — returns the legacy deterministic synthetic shift assignment for the Medium demand scenario.
 - `POST /api/staffing-decisions` — recomputes and saves manager approval or rejection for a staffing roster.
 - `POST /api/decisions` — stores a manager's approve/reject decision locally for a simulation snapshot.
 
