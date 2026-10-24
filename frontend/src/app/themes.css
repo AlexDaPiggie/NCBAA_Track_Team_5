@@ -214,3 +214,45 @@
 :root[data-theme="light"] .ops-data-error{color:#a52a48!important;background:#ffedf2;border-color:#dea6b7}
 :root[data-theme="light"] .ops-skip{background:#fff;color:#075f78}
 @media(max-width:560px){.ops-topbar-right>button.ops-theme-toggle{display:inline-flex!important;width:29px;height:28px;padding:5px;justify-content:center}.ops-theme-toggle>span{display:none}.ops-topbar-right{gap:8px}}
+
+/* Improve contrast and legibility in the dark operations theme. */
+:root[data-theme="dark"] {
+  --primary:#0f6fa8;
+  --primary-foreground:#ffffff;
+  --muted-foreground:#c2cfdb;
+  --muted:#c2cfdb;
+}
+:root[data-theme="dark"] :is(
+  input::placeholder,textarea::placeholder,
+  .ops-brand small,.ops-workspace-label,.ops-workspace-label span,.ops-sidebar nav>button,.ops-kicker,
+  .ops-event-emblem,.ops-event-emblem div span,.ops-sidebar-note p,.ops-sidebar-note button,.ops-sidebar-bottom b,.ops-sidebar-bottom small,
+  .ops-breadcrumb,.ops-breadcrumb b,.ops-topbar-clock,.ops-topbar-right>button,
+  .ops-heading-kicker,.ops-heading-kicker>span:not(.ops-dot),.ops-page-heading p,.ops-airfield b>span,.ops-airfield small,
+  .ops-heading-actions button,.ops-section-icon,.ops-mini-badge,
+  .ops-mission-toolbar label>span,.ops-demand-level>span,.ops-demand-level [data-slot="tabs-trigger"],
+  .ops-mission-status>div,.ops-mission-status>span,
+  .ops-metric-heading>span:first-child,.ops-metric-value small,.ops-metric-detail,.ops-metric-delta,
+  .ops-section-title p,.ops-chart-legend,.ops-chart-summary small,.ops-chart-note,.ops-footnote,
+  .ops-flight-row b,.ops-flight-row small,.ops-flight-row>div:nth-child(2)>span,.ops-feed-footer,
+  .ops-timeline-head>span,.ops-timeline-head>div>span,.ops-worker-label b,.ops-worker-label small,.ops-timeline-legend,.ops-timeline-legend>small,
+  .ops-crisis-field label,.ops-crisis-field b small,.ops-crisis-field p,.ops-worker-chips b,.ops-worker-chips b small,
+  .ops-trigger-action>button:last-child,.ops-crisis-explainer p,.ops-crisis-explainer span b,
+  .ops-delta-table>div>span,.ops-delta-table b,.ops-delta-table b svg,
+  .ops-gap-grid b span,.ops-gap-grid p,.ops-gap-grid small,.ops-empty,.ops-empty p,
+  .ops-report-intro p,.ops-recovery-changes b>span,.ops-recovery-changes p,.ops-recovery-changes small,
+  .ops-model-note,.ops-approval-fields label,.ops-approval-actions>p,
+  .ops-report-table thead th,.ops-report-table tbody th,.ops-report-table tbody th>span,.ops-report-table td,
+  .ops-evidence-grid h3,.ops-evidence-grid p,.ops-footer,.ops-footer>span,.ops-footer p,.ops-footer button,
+  [data-slot="dialog-description"],.ops-inspector-type,.ops-inspector-service,.ops-fact-list dt,.ops-fact-list dd,
+  .ops-assigned-workers b,.ops-data-sections h3,.ops-data-sections p,.ops-data-sections li
+){color:#c2cfdb}
+:root[data-theme="dark"] :is(.ops-breadcrumb svg,.ops-crisis-explainer span svg,.ops-gap-grid>button>svg){color:#aabacb}
+:root[data-theme="dark"] .ops-crisis-banner p{color:#e2b3be}
+:root[data-theme="dark"] .ops-recovery-banner p,:root[data-theme="dark"] .ops-assigned-workers small{color:#b5ddd4}
+:root[data-theme="dark"] .ops-gap-grid p{color:#e0b7c5}
+:root[data-theme="dark"] .ops-gap-grid small{color:#d4bac8}
+:root[data-theme="dark"] .ops-report-table .candidate td{color:#a1e3ce}
+:root[data-theme="dark"] .ops-preset-row button{color:#c2cfdb}
+:root[data-theme="dark"] .ops-preset-row button:first-child{color:#f0c77f}
+:root[data-theme="dark"] .ops-status{font-size:11px!important}
+:root[data-theme="dark"] :is(.ops-heading-tag,.ops-nav-count){font-size:11px}
