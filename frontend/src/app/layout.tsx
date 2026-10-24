@@ -4,6 +4,7 @@ import {ThemeProvider} from '@/components/theme-provider';
 import {themeBootScript} from '@/lib/theme';
 import './globals.css';
 import './themes.css';
+import './task-timeline.css';
 
 export const metadata:Metadata={title:'CrewPilot AI | Mission Control',description:'An aviation staffing command center. Simulate arrival waves, test crew disruptions, and review explainable recovery plans using labeled synthetic data.'};
 export default function RootLayout({children}:{children:React.ReactNode}){
