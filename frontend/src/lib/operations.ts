@@ -1,4 +1,7 @@
 /** Deterministic synthetic operations replay. This is a planning model, not dispatch. */
+import {laxArrivalProfiles} from './lax-arrivals.ts';
+
+
 export type Team = 'ramp' | 'fuel' | 'service';
 export type Week = 'normal' | 'event';
 export type DemandLevel = 'Low' | 'Medium' | 'High';
@@ -195,12 +198,34 @@ export function recoveryChanges(before:Schedule,after:Schedule):RecoveryChange[]
       reason:old?.assignment?`Recomputed at ${clock(a.start)} with ${result.task.crewRequired} qualified ${teamLabels[result.task.team].toLowerCase()} crew. Shift, break and overlap checks passed; feasible in-progress work retained.`:`${old?.reason??'Task needed crew.'} Reassigned to qualified, available crew; shift, break and overlap checks passed.`}];
   });
 }
+function crewDemandInWindow(mission:Mission,start:number,end:number){
+  return mission.tasks.reduce((n,t)=>n+(overlap({start:t.earliest,end:t.earliest+t.duration},{start,end})?t.crewRequired:0),0);
+}
 export function capacitySeries(mission:Mission,crisis:Crisis=noCrisis){
   return Array.from({length:52},(_,i)=>{
     const start=START+i*30,end=start+30;
-    const demand=mission.tasks.reduce((n,t)=>n+(overlap({start:t.earliest,end:t.earliest+t.duration},{start,end})?t.crewRequired:0),0);
+    const demand=crewDemandInWindow(mission,start,end);
     const capacity=mission.workers.filter(w=>workerAvailable(w,{start:start+14,end:start+15},crisis)).length;
     return {time:clock(start),minute:start,demand,capacity};
+  });
+}
+export function arrivalDemandSeries(day:number){
+  const profile=laxArrivalProfiles[day];
+  return Array.from({length:17},(_,i)=>{
+    const start=12*60+i*30,end=start+30;
+    const arrivals=profile.halfHours[24+i];
+    let demand=0;
+    for(let flight=0;flight<arrivals;flight++){
+      const eta=start+Math.floor((flight+.5)*30/arrivals);
+      for(const task of [
+        {start:eta+5,end:eta+40,crew:2},
+        {start:eta,end:eta+15,crew:1},
+        {start:eta+15,end:eta+55,crew:.7},
+      ]){
+        if(overlap({start:task.start,end:task.end},{start,end}))demand+=task.crew;
+      }
+    }
+    return {time:clock(start),minute:start,arrivals,demand:Math.round(demand*10)/10};
   });
 }
 export function operationalRisk(metrics:Metrics){return metrics.uncoveredTasks===0?'low':metrics.uncoveredTasks/Math.max(1,metrics.tasks)>.15?'high':'watch';}

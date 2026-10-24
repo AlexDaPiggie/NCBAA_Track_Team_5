@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createMission,applyCrisis,scheduleTasks,evaluateOriginal,recoveryChanges,workerAvailable,noCrisis,stackedCrisis,NOW,defaultTaskRules} from '../src/lib/operations.ts';
+import {createMission,applyCrisis,scheduleTasks,evaluateOriginal,recoveryChanges,workerAvailable,noCrisis,stackedCrisis,NOW,defaultTaskRules,arrivalDemandSeries} from '../src/lib/operations.ts';
+import {laxArrivalProfiles} from '../src/lib/lax-arrivals.ts';
 import {sampleDemand} from '../src/demand-csv.ts';
 
 function checkConstraints(mission,schedule,crisis){
@@ -28,8 +29,21 @@ function checkConstraints(mission,schedule,crisis){
 test('normal and event fixtures are deterministic, with eligible assignments',()=>{
   const event=createMission(),normal=createMission('normal');
   assert.deepEqual(event,createMission());
+  assert.equal(normal.source,'synthetic');
   assert.ok(event.aircraft.length>normal.aircraft.length);
   checkConstraints(event,scheduleTasks(event),noCrisis);
+});
+test('arrival-demand chart buckets arrivals and modeled crew demand into half-hour windows',()=>{
+  const mission=createMission();
+  const originalMission=structuredClone(mission);
+  const series=arrivalDemandSeries(mission.day);
+  assert.equal(series.length,17);
+  assert.equal(series[0].time,'12:00');
+  assert.equal(series.at(-1).time,'20:00');
+  assert.deepEqual(series.map(row=>row.arrivals),laxArrivalProfiles[mission.day].halfHours.slice(24,41));
+  assert.equal(series.reduce((sum,row)=>sum+row.arrivals,0),laxArrivalProfiles[mission.day].halfHours.slice(24,41).reduce((sum,n)=>sum+n,0));
+  assert.deepEqual(mission,originalMission);
+  assert.ok(series.some(row=>row.demand>0));
 });
 test('crisis adds aircraft, shifts arrival windows, and retains original assignments',()=>{
   const mission=createMission(),original=scheduleTasks(mission),affected=applyCrisis(mission,stackedCrisis);

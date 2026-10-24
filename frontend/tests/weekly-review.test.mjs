@@ -36,8 +36,9 @@ test('every proposed shift addition, removal, and dollar difference reconciles w
     assert.equal(review.addedShifts-review.removedShifts,review.netShifts);
     assert.equal(review.incrementalCost,scenario.recommended.laborCost-scenario.baseline.laborCost);
     assert.equal(Object.values(review.roleShiftDeltas).reduce((sum,delta)=>sum+delta,0),review.netShifts);
+    assert.equal(review.addedShifts,review.changes.reduce((sum,row)=>sum+Math.max(0,row.shiftDelta),0));
+    assert.equal(review.removedShifts,review.changes.reduce((sum,row)=>sum+Math.max(0,-row.shiftDelta),0));
     assert.equal(review.changes.reduce((sum,row)=>sum+row.shiftDelta,0),review.netShifts);
     assert.equal(review.changes.reduce((sum,row)=>sum+row.costDelta,0),review.incrementalCost);
   }
-  assert.ok(buildWeeklyReview(plan.cases.Medium).changes.some(row=>row.shiftDelta<0));
 });

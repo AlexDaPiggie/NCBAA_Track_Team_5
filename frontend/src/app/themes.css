@@ -3,7 +3,7 @@
   --primary-foreground:#062831;--secondary:#1c2b3b;--secondary-foreground:#d5e2ec;
   --muted-surface:#203043;--muted-foreground:#8295a9;--accent:#24374a;--accent-foreground:#e5eff7;
   --destructive:#f36979;--border:#243446;--input:#283c50;--ring:#39c6e5;
-  --chart-demand:#35c6e5;--chart-capacity:#48c99b;--chart-grid:#253342;--chart-axis:#8298ad;
+  --chart-demand:#35c6e5;--chart-capacity:#48c99b;--chart-arrivals:#f2a64a;--chart-grid:#253342;--chart-axis:#8298ad;
   --chart-tooltip:#152231;--chart-tooltip-border:#33465b;--chart-conflict:#fb7185;
 }
 :root[data-theme="light"] {
@@ -12,7 +12,7 @@
   --muted-surface:#e7edf4;--muted-foreground:#52677d;--accent:#e6f3f8;--accent-foreground:#124d65;
   --destructive:#b52f4c;--border:#d2deea;--input:#bdcddd;--ring:#087b98;
   --cyan:#087b98;--green:#176c49;--amber:#805000;--red:#b52f4c;--muted:#52677d;--line:#d2deea;
-  --chart-demand:#087b98;--chart-capacity:#176c49;--chart-grid:#d5e0eb;--chart-axis:#52677d;
+  --chart-demand:#087b98;--chart-capacity:#176c49;--chart-arrivals:#a64b00;--chart-grid:#d5e0eb;--chart-axis:#52677d;
   --chart-tooltip:#ffffff;--chart-tooltip-border:#bdcddd;--chart-conflict:#b52f4c;
   --status-cyan-text:#075f78;--status-cyan-bg:#e5f5fa;--status-green-text:#176c49;--status-green-bg:#e9f6ee;
   --status-amber-text:#805000;--status-amber-bg:#fff4db;--status-red-text:#a52a48;--status-red-bg:#ffedf2;

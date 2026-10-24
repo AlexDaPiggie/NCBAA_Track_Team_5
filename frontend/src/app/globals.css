@@ -149,3 +149,5 @@
 .ops-task-block.recovered{background:#1d503e;border-color:#3a9b71;border-left-color:#72e0a7;color:#c4f5d8}
 .ops-labor-breakdown{font-size:11px;font-weight:600;color:#76d4a8;line-height:1.5;font-variant-numeric:tabular-nums}
 .ops-crisis-scope-warning{color:#ff9baa!important;font-weight:600}
+.ops-chart-controls{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}.ops-chart-controls [data-slot=tabs]{gap:0}.ops-chart-controls [data-slot=tabs-list]{height:31px;padding:2px;background:#0b1925;border:1px solid #2b4053}.ops-chart-controls [data-slot=tabs-trigger]{padding:5px 8px;font-size:8px;line-height:1;color:#8da4b8}.ops-chart-controls [data-slot=tabs-trigger][data-state=active]{background:#1b3244;border-color:#36576b;color:#d5e9f5}
+@media(max-width:700px){.ops-chart-controls{justify-content:flex-start}.ops-chart-controls .ops-chart-legend{width:100%}}
