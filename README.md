@@ -2,7 +2,11 @@
 
 ## Task-first timeline
 
-The operations timeline opens in **Tasks** mode, grouped by arrival assistance, fuel service, and guest assistance. Each aircraft service appears once, even when it requires two workers. Parallel display lanes separate overlapping jobs; they do not represent worker counts. Click a task to inspect its assigned crew, required qualification, service window, and any conflict reason. Use **Crew** for the worker/break view, or **Show uncovered only** to focus on gaps.
+Mission Control includes the **Service Timeline**. It opens in **Tasks** mode, grouped by arrival assistance, fuel service, and guest assistance. Each aircraft service appears once, even when it requires two workers. Parallel display lanes separate overlapping jobs; they do not represent worker counts. Click a task to inspect its assigned crew, required qualification, service window, and any conflict reason. Use **Crew** for the worker/break view, or **Show uncovered only** to focus on gaps. **Show details** expands the crew view and uncovered-service queue on the same page; **Hide details** collapses them.
+
+## Mission replay window
+
+The selected-day mission replay covers 00:00–24:00. Twelve fictional workers cover three fixed eight-hour shifts: 00:00–08:00, 08:00–16:00, and 16:00–24:00. The same shift repeats each day, giving each worker 16 hours between shifts. Service tasks from late arrivals can finish by 02:00 the next day. Simulator time defaults to 14:00 PST and can be changed in 15-minute steps across the day. The selected time applies when **Run Simulator** is clicked. Arrival delays are capped, and affected service work cannot extend past 02:00. All arrival and staffing data are synthetic assumptions, not VNY operating records or labor rules.
 
 ## Dataset
 
@@ -13,10 +17,12 @@ The project includes these data files:
 - [synthetic_employees.csv](backend/data/synthetic_employees.csv): fictional worker ID, department qualification, available hours, assumed hourly wage, and provenance.
 - [synthetic_requests.csv](backend/data/synthetic_requests.csv): department, arrival minute, service time, and provenance.
 - [real_jfk_hourly_departures.csv](backend/data/real_jfk_hourly_departures.csv): timestamp, observed JFK departures per hour, and provenance.
+- [aviation-context.ts](frontend/src/lib/aviation-context.ts): LAX commercial airline arrivals by local hour for February 7–13, 2022. The Impact Report displays them as context only; they do not drive demand or staffing.
+- [weekly-planner.ts](frontend/src/lib/weekly-planner.ts): browser-only seven-day staffing comparison using fixed-seed synthetic demand and workforce assumptions.
 
 The planner builds its standard hourly profile in code. The synthetic files are generated demo data; they are not records from an FBO. The trained option uses a model fitted to the generated training history.
 
-Most records are synthetic. They do not describe real FBO activity. Low, medium, and high event cases use multipliers of 1.15, 1.4, and 1.7. These are planning assumptions, not forecasts.
+Most records are synthetic. They do not describe real FBO activity. Low, medium, and high event cases use multipliers of 1.15, 1.4, and 1.7. These are planning assumptions, not forecasts. The LAX reference is commercial airline traffic, not business aviation, FBO demand, or a forecast for 2027. See [data sources](docs/DATA_SOURCES.md).
 
 ## How the planner calculates staffing
 
@@ -40,13 +46,11 @@ The queue uses the selected random seed. Plans use median, 85th percentile, or p
 
 ## Recovery Planner: proposed staffing
 
-For each recovery scenario, the planner searches additional Ramp, Fuel, and Customer Service headcount and starts each control at the smallest count that covers that role's modeled tasks when possible. If 100% role coverage cannot be reached within the 20-worker control limit, it selects the headcount that covers the most tasks and reports the remaining gap. A manager can adjust the number controls; each change recalculates the candidate schedule, coverage, and uncovered tasks using the same task scheduler. Counts are saved with the scenario in the current page session, and changing a count clears any previous manager decision.
+Recovery Planner opens on the current plan: coverage, uncovered services, available crew, labor cost, and task timeline. Click **Plan recovery**, then **View proposed plan** to see the suggested changes. **View current status** returns to the original plan.
 
-The recovery backlog and its coverage metrics exclude original gaps whose remaining service window had already expired by the 14:00 recovery start. Those remain visible in Mission Control, clearly separate from disruption-related work that can still be rescheduled.
+For each role, Recovery Planner tries 0–20 additional hypothetical workers against the selected disruption. It recommends the smallest count that covers that role's modeled tasks, or the count covering the most tasks within that limit. The manager can adjust each count; coverage, assignments, and cost recalculate. The page warns when full role coverage is not reached. This bounded search uses the existing greedy scheduler; it does not prove a global optimum.
 
-The page shows added cost for the selected 11:30–20:30 shift/day and a weekly estimate that repeats the same staffing seven times. Costs use the synthetic role hourly rate and full nine-hour paid shift (including its paid break). They are planning estimates, not payroll quotes. Proposed hires are not available for a current incident until a manager hires and schedules them. A decision record includes the proposed worker roster, headcounts, and cost estimates.
-
-Crisis Mode caps arrival delay to keep the selected flights' shifted service starts and durations inside the modeled 20:30 staffing cutoff. The trigger blocks any delayed service newly pushed outside that cutoff and asks the manager to reduce the delay.
+Added cost assumes the synthetic role rate and a full paid eight-hour shift. The weekly estimate repeats that staffing seven days. Proposed workers and rates need manager validation. A decision record includes the proposed roster, headcounts, and cost estimates; it does not hire, notify, or dispatch workers.
 
 ## Data sources
 
@@ -57,9 +61,9 @@ More details: [DATA_SOURCES.md](DATA_SOURCES.md).
 
 ## Run locally on Windows
 
-Recovery Planner remembers each scenario during the current page session. Switching Low/Medium/High, mission day, or demand profile restores that scenario's disruption settings, recovery candidate and review. New conditions require a new calculation; applying a changed disruption clears that scenario's candidate and review. Reapplying identical disruption settings preserves them. Refreshing or closing the page clears this in-memory scenario history; downloaded decision records remain separate.
+Recovery Planner remembers each scenario's disruption, candidate, and review during the current page session. A changed disruption clears its candidate and review; reapplying the same disruption keeps them. Refreshing clears this history.
 
-The current CrewPilot website runs its synthetic demo in the browser. **Only the frontend is required.**
+The current CrewPilot website runs its synthetic mission replay and seven-day staffing plan in the browser. **Only the frontend is required.** The weekly screen compares an ordinary-week roster with low, medium, and high event rosters. It is separate from the optional FastAPI weekly model.
 
 From the project folder, run:
 
@@ -75,7 +79,7 @@ If port 3000 is already in use, the website may already be running. Open the URL
 
 ### Optional: run the separate backend
 
-The FastAPI backend contains the weekly staffing model. It is **not connected to the current dashboard**. To run its API independently, activate your Python environment, then run:
+The FastAPI backend is a separate weekly staffing model. The browser dashboard runs its own synthetic seven-day plan without a backend connection. To run the FastAPI independently, activate your Python environment, then run:
 
 ```powershell
 python -m pip install -r backend/requirements.txt
@@ -86,8 +90,10 @@ API documentation: **http://127.0.0.1:8000/docs**. Keep this separate terminal r
 
 ## Where things live
 
-- [frontend/src/main.tsx](frontend/src/main.tsx) — pages, controls, charts, and manager review.
-- [frontend/src/DepartmentView.tsx](frontend/src/DepartmentView.tsx) — animated request and staff-seat replay.
+- [frontend/src/components/operations/command-center.tsx](frontend/src/components/operations/command-center.tsx) — mission pages, controls, charts, and manager review.
+- [frontend/src/components/operations/weekly-staffing-plan.tsx](frontend/src/components/operations/weekly-staffing-plan.tsx) — seven-day scenario comparison and manager review.
+- [frontend/src/lib/weekly-planner.ts](frontend/src/lib/weekly-planner.ts) — deterministic browser staffing calculation.
+- [frontend/src/lib/weekly-review.ts](frontend/src/lib/weekly-review.ts) — day/shift/role differences and reconciliation for the proposal review. The weekly proposal uses fixed peak-staffing rules and greedy worker assignment; it is not a global optimizer.
 - [backend/main.py](backend/main.py) — API for simulations, replay, staffing plans, and manager decisions.
 - [backend/model.py](backend/model.py) — demand, staffing needs, and waiting-line simulation.
 - [backend/scheduling.py](backend/scheduling.py) — synthetic shift roster, break capacity, rest/hour limits, and disruption comparison.

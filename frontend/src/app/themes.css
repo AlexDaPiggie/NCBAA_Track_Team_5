@@ -113,7 +113,7 @@
 :root[data-theme="light"] .ops-worker-absent .ops-avatar{opacity:1}
 :root[data-theme="light"] .ops-worker-absent .ops-worker-label b{color:#a52a48}
 :root[data-theme="light"] .ops-absent-label{color:#a52a48;background:#ffedf2;border-color:#dda5b5}
-:root[data-theme="light"] .ops-time-track{background:repeating-linear-gradient(90deg,transparent,transparent calc(100% / 17 - 1px),#dce5ee calc(100% / 17 - 1px),#dce5ee calc(100% / 17))}
+:root[data-theme="light"] .ops-time-track{background:repeating-linear-gradient(90deg,transparent,transparent calc(100% / 52 - 1px),#dce5ee calc(100% / 52 - 1px),#dce5ee calc(100% / 52))}
 :root[data-theme="light"] .ops-worker-absent .ops-time-track{background-color:#fff5f8}
 :root[data-theme="light"] .ops-now-line{background:#087b98aa}
 :root[data-theme="light"] .ops-now-line:before{background:#087b98}
@@ -191,14 +191,12 @@
 :root[data-theme="light"] .ops-report-table th>span{color:#52677d}
 :root[data-theme="light"] .ops-hiring-role{background:#f6f9fc;border-color:#d3e0e9}
 :root[data-theme="light"] .ops-hiring-role>span:first-child b{color:#173c57}
-:root[data-theme="light"] .ops-hiring-role>span:first-child small,:root[data-theme="light"] .ops-hiring-control small,:root[data-theme="light"] .ops-hiring-rate,:root[data-theme="light"] .ops-hiring-note{color:#52677d}
+:root[data-theme="light"] .ops-hiring-role>span:first-child small,:root[data-theme="light"] .ops-hiring-control small,:root[data-theme="light"] .ops-hiring-rate{color:#52677d}
 :root[data-theme="light"] .ops-hiring-role>span:first-child .ops-hiring-recommendation{color:#17627c}
 :root[data-theme="light"] .ops-hiring-role>span:first-child .ops-hiring-recommendation.unreachable{color:#a52a48}
 :root[data-theme="light"] .ops-hiring-control input{background:#fff;border-color:#bdcddd;color:#17324b}
-:root[data-theme="light"] .ops-hiring-cost>div{background:#edf5fa;border-color:#cbdce8}
-:root[data-theme="light"] .ops-hiring-cost span{color:#31516b}
-:root[data-theme="light"] .ops-hiring-cost b{color:#176c49}
 :root[data-theme="light"] .ops-recommended-staffing{color:#176c49}
+:root[data-theme="light"] .ops-hiring-limit{color:#a52a48}
 :root[data-theme="light"] .ops-report-table td{color:#435e77}
 :root[data-theme="light"] .ops-report-table .candidate{background:#eff8f3}
 :root[data-theme="light"] .ops-report-table .candidate td{color:#176c49}

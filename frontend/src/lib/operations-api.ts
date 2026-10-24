@@ -1,4 +1,4 @@
-import {createMission,applyCrisis,scheduleTasks,evaluateOriginal,metricsFor,createProposedWorkers,noHires,noCrisis,NOW,END,type Mission,type Schedule,type Crisis,type Week,type DemandLevel,type UploadedCount,type TaskRules,type Worker,type Team,type HireCounts} from './operations.ts';
+import {createMission,applyCrisis,scheduleTasks,evaluateOriginal,metricsFor,createProposedWorkers,noHires,noCrisis,simulationMinute,SERVICE_END,type Mission,type Schedule,type Crisis,type Week,type DemandLevel,type UploadedCount,type TaskRules,type Worker,type Team,type HireCounts} from './operations.ts';
 
 /** DTOs for a future task-level FastAPI adapter. Existing weekly API remains separate. */
 export type MissionRequest = {week:Week;level:DemandLevel;day:number;seed:number;upload?:{name:string;rows:UploadedCount[]};rules?:TaskRules;workers?:Worker[]};
@@ -21,11 +21,11 @@ export const demoOperations:OperationsProvider = {
   recover(input){const mission=applyCrisis(input.mission,input.crisis);const fixed=evaluateOriginal(mission,input.original,input.crisis);fixed.metrics=metricsFor(fixed.results,mission.workers.filter(worker=>!worker.proposed));return scheduleTasks(mission,input.crisis,fixed);},
 };
 export function recommendRecoveryHeadcount(mission:Mission,original:Schedule,crisis:Crisis):{counts:HireCounts;fullyCovered:Record<Team,boolean>}{
-  const counts={...noHires},fullyCovered={} as Record<Team,boolean>,affected=applyCrisis(mission,crisis);
+  const counts={...noHires},fullyCovered={} as Record<Team,boolean>,affected=applyCrisis(mission,crisis),now=simulationMinute(crisis);
   for(const team of ['ramp','fuel','service'] as Team[]){
     const recoverable=affected.tasks.filter(task=>task.team===team&&(
       !!original.results.find(result=>result.task.id===task.id)?.assignment||
-      Math.max(task.earliest,NOW)+task.duration<=Math.min(task.deadline,END)));
+      Math.max(task.earliest,now)+task.duration<=Math.min(task.deadline,SERVICE_END)));
     const recoverableIds=new Set(recoverable.map(task=>task.id));
     let bestCovered=-1,bestCount=0,taskCount=recoverable.length;
     fullyCovered[team]=taskCount===0;

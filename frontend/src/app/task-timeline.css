@@ -37,3 +37,4 @@
 .ops-task-empty p{font-size:12px}
 @media(max-width:760px){.ops-timeline-actions{justify-content:space-between}.ops-task-summary{align-items:start;flex-wrap:wrap}.ops-task-summary>button{margin-left:auto}.ops-task-summary>span>span{font-size:9px}}
 @media(max-width:480px){.ops-timeline-actions [data-slot="tabs-trigger"]{font-size:10px;min-width:43px;padding:3px 7px}.ops-task-summary{font-size:10px;padding:10px}.ops-task-summary>span>b{font-size:10px}.ops-task-summary>span>span{border:0;padding-left:0;margin-left:0;width:100%}.ops-task-summary>button{font-size:10px}.ops-timeline-actions>select{max-width:125px}}
+.ops-historical-chart{height:220px;width:100%;margin:10px 0 4px}

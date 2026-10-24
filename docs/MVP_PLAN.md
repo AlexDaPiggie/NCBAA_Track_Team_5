@@ -6,6 +6,24 @@ Current frontend direction: the user's dark aviation command center, documented 
 
 Implement the event-week staffing stress tester in the existing repository stack where feasible. Optimize for a complete, inspectable demo; do not add unrelated FBO functions. All outputs remain manager-reviewed drafts.
 
+## Selected-day replay: extend to 24 hours
+
+### Decision
+
+Use a 00:00–24:00 mission and demand/capacity chart. Staff it with synthetic fixed shifts: 00:00–08:00, 08:00–16:00, and 16:00–24:00. Each worker stays on one shift, leaving 16 hours between daily shifts. Let service tasks finish through 02:00 next day so late arrivals can meet their modeled service deadlines. The adjustable 15-minute simulation clock defaults to 14:00. This is a daily replay, not a rotating seven-day employee roster.
+
+### Work breakdown
+
+1. Extend the deterministic synthetic arrival generator and uploaded-demand filter to all 24 hours; retain the 80-aircraft safety cap and update its error text.
+2. Create qualified workers for each of the three fixed shifts, with staggered breaks. Make worker availability repeat by day so overnight tail tasks can use the next 00:00 shift.
+3. Extend demand/capacity samples and both task-timeline views; show the next-day service tail clearly.
+4. Spread proposed hires across shift groups. Update assumptions, CSV guidance, demo steps, and API notes.
+5. Update deterministic model fixtures and automated checks for all-day demand, shift coverage, overnight task windows, and 16-hour daily rest.
+
+### Risks and limits
+
+This does not model shift rotation, week-to-week availability, overtime, or local labor law. The traffic curve, shift sizes, break timing, and 16-hour rest are synthetic assumptions. The 24-hour window improves coverage completeness; it does not establish real VNY demand or operating policy.
+
 ## Implementation choice
 
 The current app uses React, TypeScript, and Vite for the website, with FastAPI/Python for local APIs and the simulation model. Keep this stack for the hackathon; a framework migration adds risk without helping the staffing demo.

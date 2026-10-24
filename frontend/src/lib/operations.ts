@@ -8,7 +8,7 @@ export type Aircraft = {id:string;type:string;eta:number;passengers:number;fuelS
 export type ServiceTask = {id:string;aircraftId:string;team:Team;label:string;earliest:number;deadline:number;duration:number;crewRequired:number};
 export type Assignment = {taskId:string;workerIds:string[];start:number;end:number};
 export type TaskResult = {task:ServiceTask;assignment:Assignment|null;previous?:Assignment;reason:string};
-export type Crisis = {extraArrivals:number;absentWorkerIds:string[];arrivalDelayMinutes:number;delayedFlightCount:number};
+export type Crisis = {extraArrivals:number;absentWorkerIds:string[];arrivalDelayMinutes:number;delayedFlightCount:number;simulationTime?:number};
 export type TaskRules = Record<Team,{label:string;duration:number;crewRequired:number;startOffset:number;deadlineOffset:number}>;
 export const defaultTaskRules:TaskRules={ramp:{label:'Arrival assistance',duration:35,crewRequired:2,startOffset:5,deadlineOffset:75},service:{label:'Guest assistance',duration:15,crewRequired:1,startOffset:0,deadlineOffset:55},fuel:{label:'Fuel service',duration:40,crewRequired:1,startOffset:15,deadlineOffset:115}};
 export type Mission = {week:Week;level:DemandLevel;day:number;seed:number;workers:Worker[];aircraft:Aircraft[];tasks:ServiceTask[];rules:TaskRules;source:'synthetic'|'uploaded';sourceName:string};
@@ -18,22 +18,31 @@ export type RecoveryChange = {taskId:string;aircraftId:string;label:string;befor
 export type HireCounts = Record<Team,number>;
 export type ReviewRecord = {id:string;status:'approved'|'rejected';manager:string;notes:string;timestamp:string;mission:Pick<Mission,'week'|'level'|'day'|'seed'|'source'|'sourceName'>;crisis:Crisis;metrics:Metrics;hiringPlan:{counts:HireCounts;incrementalPerShift:number;weeklyIfRepeated:number};assignments:Assignment[];snapshot:{modelVersion:string;aircraft:Aircraft[];workers:Worker[];tasks:ServiceTask[];originalMetrics:Metrics}};
 export type UploadedCount = {hour:number;aircraft:number;passengers:number;fuel_requests:number};
-export const START=720, END=1230, NOW=840;
+export const START=0, END=1440, SERVICE_END=1560, NOW=840;
 export const teamLabels:Record<Team,string>={ramp:'Ramp operations',fuel:'Fuel service',service:'Customer service'};
-export const noCrisis:Crisis={extraArrivals:0,absentWorkerIds:[],arrivalDelayMinutes:0,delayedFlightCount:3};
+export const noCrisis:Crisis={extraArrivals:0,absentWorkerIds:[],arrivalDelayMinutes:0,delayedFlightCount:3,simulationTime:NOW};
 export const stackedCrisis:Crisis={extraArrivals:4,absentWorkerIds:['R-03','R-04'],arrivalDelayMinutes:45,delayedFlightCount:3};
-export function clock(minute:number){return `${String(Math.floor(minute/60)).padStart(2,'0')}:${String(Math.round(minute%60)).padStart(2,'0')}`;}
+export function simulationMinute(crisis:Crisis=noCrisis){return Math.max(START,Math.min(END,crisis.simulationTime??NOW));}
+export function clock(minute:number){
+  const day=Math.floor(minute/1440),inDay=minute-day*1440;
+  const hour=Math.floor(inDay/60),minutes=Math.round(inDay%60);
+  const time=day&&inDay===0?`${String(day*24).padStart(2,'0')}:00`:`${String(hour).padStart(2,'0')}:${String(minutes).padStart(2,'0')}`;
+  return day&&inDay!==0?`${time} +${day}d`:time;
+}
 export function rng(seed:number){let state=seed>>>0;return ()=>{state=(1664525*state+1013904223)>>>0;return state/4294967296;};}
 const overlap=(a:Window,b:Window)=>a.start<b.end&&b.start<a.end;
 
 export function createWorkers():Worker[]{
-  const names=['M. Chen','J. Rivera','A. Brooks','S. Patel','T. Morgan','D. Kim','R. Taylor','C. Ellis','L. Davis'];
-  const teams:Team[]=['ramp','ramp','ramp','ramp','ramp','fuel','fuel','service','service'];
-  const breaks=[780,810,900,930,960,870,990,840,900];
+  const names=['M. Chen','J. Rivera','A. Brooks','S. Patel','T. Morgan','D. Kim','R. Taylor','C. Ellis','L. Davis','K. Nguyen','P. Wilson','J. Thompson'];
+  const teams:Team[]=['ramp','ramp','fuel','service','ramp','ramp','fuel','service','ramp','ramp','fuel','service'];
+  const shiftStarts=[0,480,960];
   const index={ramp:0,fuel:0,service:0};
-  return teams.map((team,i)=>({id:`${team==='ramp'?'R':team==='fuel'?'F':'C'}-${String(++index[team]).padStart(2,'0')}`,name:names[i],team,
-    qualification:team==='ramp'?'Synthetic ramp qualification':team==='fuel'?'Synthetic fuel-service qualification':'Synthetic customer-service qualification',
-    shift:{start:690,end:1230},break:{start:breaks[i],end:breaks[i]+30},hourlyRate:team==='ramp'?32:team==='fuel'?35:26}));
+  return teams.map((team,i)=>{
+    const shiftStart=shiftStarts[Math.floor(i/4)],breakStart=shiftStart+240+(i%4)*15;
+    return {id:`${team==='ramp'?'R':team==='fuel'?'F':'C'}-${String(++index[team]).padStart(2,'0')}`,name:names[i],team,
+      qualification:team==='ramp'?'Synthetic ramp qualification':team==='fuel'?'Synthetic fuel-service qualification':'Synthetic customer-service qualification',
+      shift:{start:shiftStart,end:shiftStart+480},break:{start:breakStart,end:breakStart+30},hourlyRate:team==='ramp'?32:team==='fuel'?35:26};
+  });
 }
 export const noHires:HireCounts={ramp:0,fuel:0,service:0};
 export function createProposedWorkers(mission:Mission,counts:HireCounts):Worker[]{
@@ -41,9 +50,9 @@ export function createProposedWorkers(mission:Mission,counts:HireCounts):Worker[
     const template=mission.workers.find(worker=>worker.team===team);
     if(!template)return [];
     return Array.from({length:Math.max(0,Math.min(20,Math.floor(counts[team]||0)))},(_,i)=>{
-      const breakStart=750+((i+teamIndex*2)%8)*30;
+      const shiftStart=[0,480,960][(i+teamIndex)%3],breakStart=shiftStart+240+((i+teamIndex)%4)*15;
       return {id:`PLAN-${team.toUpperCase()}-${String(i+1).padStart(2,'0')}`,name:`Proposed ${teamLabels[team]} hire ${i+1}`,team,
-        qualification:template.qualification,shift:{...template.shift},break:{start:breakStart,end:breakStart+30},hourlyRate:template.hourlyRate,proposed:true};
+        qualification:template.qualification,shift:{start:shiftStart,end:shiftStart+480},break:{start:breakStart,end:breakStart+30},hourlyRate:template.hourlyRate,proposed:true};
     });
   });
 }
@@ -62,9 +71,9 @@ export function createMission(week:Week='event',level:DemandLevel='Medium',day=5
   let aircraft:Aircraft[]=[];
   const types=['Gulfstream G650','Challenger 350','Citation Latitude','Phenom 300'];
   if(uploaded){
-    const selected=uploaded.rows.filter(r=>Math.floor(r.hour/24)===day&&r.hour%24>=12&&r.hour%24<20);
+    const selected=uploaded.rows.filter(r=>Math.floor(r.hour/24)===day);
     const count=Math.round(selected.reduce((sum,r)=>sum+r.aircraft*factor,0));
-    if(count>80)throw new Error('This task-replay demo supports up to 80 aircraft in the selected eight-hour window. Reduce the uploaded counts or event factor.');
+    if(count>80)throw new Error('This task-replay demo supports up to 80 aircraft in the selected 24-hour day. Reduce the uploaded counts or event factor.');
     let carry=0;
     for(const row of selected){
       const expected=row.aircraft*factor+carry,n=Math.floor(expected);carry=expected-n;
@@ -73,41 +82,53 @@ export function createMission(week:Week='event',level:DemandLevel='Medium',day=5
     }
   }else{
     const count=Math.round(17*[.8,.85,.9,1,1.1,1.2,1.05][day]*factor);
-    aircraft=Array.from({length:count},(_,i)=>{
-      const f=(i+.5)/count;
-      const eta=5*Math.round((START+15+f*420+25*Math.sin(f*Math.PI*2)+(random()-.5)*12)/5);
-      return {id:`DEMO-${101+i}`,type:types[i%4],eta,passengers:3+Math.floor(random()*7),fuelService:random()<.7,stand:`A${i%6+1}`};
-    });
+    const weights=Array.from({length:24},(_,hour)=>.2+.8*(.5+.5*Math.cos((hour-14)*Math.PI/12)));
+    const weightTotal=weights.reduce((sum,weight)=>sum+weight,0);
+    let carry=0;
+    for(let hour=0;hour<24;hour++){
+      const expected=count*weights[hour]/weightTotal+carry,n=Math.floor(expected);carry=expected-n;
+      for(let j=0;j<n;j++){
+        const minute=Math.max(0,Math.min(59,Math.floor((j+.5)*60/n+(random()-.5)*8)));
+        aircraft.push({id:`DEMO-${101+aircraft.length}`,type:types[aircraft.length%4],eta:hour*60+minute,
+          passengers:3+Math.floor(random()*7),fuelService:random()<.7,stand:`A${aircraft.length%6+1}`});
+      }
+    }
   }
   aircraft.sort((a,b)=>a.eta-b.eta||a.id.localeCompare(b.id));
   return {week,level,day,seed,workers,aircraft,tasks:tasksForAircraft(aircraft,rules),rules,source:uploaded?'uploaded':'synthetic',sourceName:uploaded?.name??'Fixed-seed synthetic FBO scenario'};
 }
 export function applyCrisis(original:Mission,crisis:Crisis):Mission{
-  const delayed=new Set(original.aircraft.filter(a=>a.eta>=NOW).slice(0,crisis.delayedFlightCount).map(a=>a.id));
+  const now=simulationMinute(crisis);
+  const delayed=new Set(original.aircraft.filter(a=>a.eta>=now).slice(0,crisis.delayedFlightCount).map(a=>a.id));
   const aircraft=original.aircraft.map(a=>({...a,eta:a.eta+(delayed.has(a.id)?crisis.arrivalDelayMinutes:0),delayMinutes:delayed.has(a.id)?crisis.arrivalDelayMinutes:0}));
-  for(let i=0;i<crisis.extraArrivals;i++)aircraft.push({id:`SURGE-${i+1}`,type:i%2?'Citation Latitude':'Gulfstream G650',eta:NOW+10+i*10,passengers:6,fuelService:true,stand:`B${i%3+1}`,unexpected:true,delayMinutes:0});
+  for(let i=0;i<crisis.extraArrivals;i++)aircraft.push({id:`SURGE-${i+1}`,type:i%2?'Citation Latitude':'Gulfstream G650',eta:now+10+i*10,passengers:6,fuelService:true,stand:`B${i%3+1}`,unexpected:true,delayMinutes:0});
   aircraft.sort((a,b)=>a.eta-b.eta||a.id.localeCompare(b.id));
   return {...original,aircraft,tasks:tasksForAircraft(aircraft,original.rules)};
 }
-export function maxSafeArrivalDelay(mission:Mission,delayedFlightCount:number,limit=120,step=15){
-  const selected=new Set(mission.aircraft.filter(a=>a.eta>=NOW).slice(0,delayedFlightCount).map(a=>a.id));
-  if(!selected.size)return limit;
+export function maxSafeArrivalDelay(mission:Mission,crisis:Crisis,limit=120,step=15){
+  const now=simulationMinute(crisis);
+  const selected=new Set(mission.aircraft.filter(a=>a.eta>=now).slice(0,crisis.delayedFlightCount).map(a=>a.id));
   const tasks=mission.tasks.filter(task=>selected.has(task.aircraftId));
   if(!tasks.length)return limit;
-  const availableDelay=Math.min(limit,...tasks.map(task=>END-task.earliest-task.duration));
+  const availableDelay=Math.min(limit,...tasks.map(task=>SERVICE_END-task.earliest-task.duration));
   return Math.max(0,step*Math.floor(availableDelay/step));
 }
 export function crisisCreatesOutOfScopeTasks(mission:Mission,crisis:Crisis){
-  const before=new Map(mission.tasks.map(task=>[task.id,task]));
+  const now=simulationMinute(crisis),before=new Map(mission.tasks.map(task=>[task.id,task]));
   return applyCrisis(mission,crisis).tasks.some(task=>{
-    const original=before.get(task.id);
-    const crisisAffected=!original||task.earliest!==original.earliest;
-    return crisisAffected&&(task.earliest<NOW||task.earliest+task.duration>END);
+    const original=before.get(task.id),crisisAffected=!original||task.earliest!==original.earliest;
+    return crisisAffected&&(task.earliest<now||task.earliest+task.duration>SERVICE_END);
   });
 }
 export function workerAvailable(worker:Worker,window:Window,crisis:Crisis=noCrisis){
-  return window.start>=worker.shift.start&&window.end<=worker.shift.end&&!overlap(window,worker.break)&&
-    !(crisis.absentWorkerIds.includes(worker.id)&&overlap(window,{start:NOW,end:END}));
+  const firstDay=Math.floor(window.start/1440)-1,lastDay=Math.floor(window.end/1440)+1;
+  let inShift=false,onBreak=false;
+  for(let day=firstDay;day<=lastDay;day++){
+    const offset=day*1440,shift={start:offset+worker.shift.start,end:offset+worker.shift.end};
+    if(window.start>=shift.start&&window.end<=shift.end)inShift=true;
+    if(overlap(window,{start:offset+worker.break.start,end:offset+worker.break.end}))onBreak=true;
+  }
+  return inShift&&!onBreak&&!(crisis.absentWorkerIds.includes(worker.id)&&overlap(window,{start:simulationMinute(crisis),end:SERVICE_END}));
 }
 export function metricsFor(results:TaskResult[],workers:Worker[],previous?:Schedule):Metrics{
   const required=results.reduce((n,r)=>n+r.task.duration*r.task.crewRequired,0);
@@ -120,10 +141,11 @@ export function metricsFor(results:TaskResult[],workers:Worker[],previous?:Sched
     reassignedTasks:results.filter(r=>{const b=before.get(r.task.id);return b&&r.assignment&&(b.start!==r.assignment.start||b.workerIds.join()!==r.assignment.workerIds.join());}).length};
 }
 export function scheduleTasks(mission:Mission,crisis:Crisis=noCrisis,previous?:Schedule):Schedule{
+  const now=simulationMinute(crisis);
   const booked=new Map(mission.workers.map(w=>[w.id,[] as Assignment[]]));
   const frozen=new Map<string,TaskResult>();
   if(previous)for(const result of previous.results){
-    if(result.assignment&&result.assignment.start<NOW){
+    if(result.assignment&&result.assignment.start<now){
       frozen.set(result.task.id,result);
       for(const id of result.assignment.workerIds)booked.get(id)?.push(result.assignment);
     }
@@ -132,7 +154,7 @@ export function scheduleTasks(mission:Mission,crisis:Crisis=noCrisis,previous?:S
   const results=ordered.map(task=>{
     if(frozen.has(task.id))return {...frozen.get(task.id)!,task};
     const qualified=mission.workers.filter(w=>w.team===task.team);
-    const earliest=5*Math.ceil(Math.max(task.earliest,previous?NOW:START)/5);
+    const earliest=5*Math.ceil(Math.max(task.earliest,previous?now:START)/5);
     let assignment:Assignment|null=null;
     for(let start=earliest;start+task.duration<=task.deadline;start+=5){
       const window={start,end:start+task.duration};
@@ -174,7 +196,7 @@ export function recoveryChanges(before:Schedule,after:Schedule):RecoveryChange[]
   });
 }
 export function capacitySeries(mission:Mission,crisis:Crisis=noCrisis){
-  return Array.from({length:17},(_,i)=>{
+  return Array.from({length:52},(_,i)=>{
     const start=START+i*30,end=start+30;
     const demand=mission.tasks.reduce((n,t)=>n+(overlap({start:t.earliest,end:t.earliest+t.duration},{start,end})?t.crewRequired:0),0);
     const capacity=mission.workers.filter(w=>workerAvailable(w,{start:start+14,end:start+15},crisis)).length;

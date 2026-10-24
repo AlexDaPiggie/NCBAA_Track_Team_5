@@ -39,3 +39,15 @@ Build A: **CrewPilot AI — Super Bowl FBO Staffing Stress Tester**. Keep scope 
 - Hypothesis: interactive disruption comparison is a useful differentiator; validate with judges/mentors.
 - Unverified: staffing roles, qualifications, break rules, maximum hours, rest periods, costs, FBO task durations, and any actual event-week demand. No aviation staffing expert has validated these assumptions.
 - Safety: planning recommendations only. A manager reviews and approves; no dispatch, movement authorization, or passenger data.
+
+## Full-day mission replay decision
+
+The track asks for a seven-day Super Bowl planning window. It does not require a specific daily operating window. Extending the selected-day replay to 24 hours addresses overnight staffing gaps while keeping the focus on staffing.
+
+| Option | Operational pain | Novelty | Judging fit | 48-hour feasibility | Data need | Safety / risk |
+|---|---|---|---|---|---|---|
+| A. Full-day replay with three fixed shifts | Covers overnight gaps and late service | Moderate; makes the existing stress test more complete | Strong; shows full-day coverage | High; reuse task and disruption model | Synthetic 24-hour profile and shift assumptions | Safe if assumptions stay labeled; low-medium risk |
+| B. Show 24-hour demand, keep 12:00–20:00 staffing | Leaves overnight coverage unknown | Low | Weak; demand and capacity use different windows | High | Same as current | Misleading comparison; medium risk |
+| C. Build a rolling multi-day roster with rotating shifts | Models handoffs, carryover, and rest across dates | Moderate | Strong but broader | Low; requires a new roster and optimizer | Multi-day worker availability and validated rules | More safety and validation work; high risk |
+
+**Decision: Option A.** Use 00:00–24:00 arrivals and capacity, with fixed 00:00–08:00, 08:00–16:00, and 16:00–24:00 synthetic shifts. Fixed daily shifts give each fictional worker 16 hours between shifts. Carry late services through 02:00 the next day so deadlines after midnight can still receive qualified crew. Keep 14:00 as the reproducible disruption checkpoint. These are prototype assumptions, not verified VNY operating or labor rules. A full rotating seven-day employee roster remains a separate planning view.
