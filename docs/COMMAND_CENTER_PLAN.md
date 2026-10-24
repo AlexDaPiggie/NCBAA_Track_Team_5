@@ -10,7 +10,6 @@ The user's latest request replaces the earlier light guided design with a premiu
 2. Workforce Timeline: inspect worker assignments and service tasks, identify uncovered work and eligibility constraints.
 3. Crisis Mode: unexpected arrivals, named synthetic worker absences, and actual arrival-time delays. Make the change from the original plan explicit.
 4. Recovery Planner: recompute a candidate task assignment plan; explain changed workers/times and remaining gaps. Manager approves or rejects a draft.
-5. Impact Report: calculate ordinary-week and event-week comparisons using the same fixture assumptions and disturbance parameters.
 
 ## Options assessed
 
@@ -27,7 +26,7 @@ The user's latest request replaces the earlier light guided design with a premiu
 - Typed domain: synthetic aircraft visits, service tasks, qualified workers, shift/break windows, assignments, disruptions, coverage metrics, recovery explanations, review records.
 - Deterministic fixture generator and pure scheduling/replay functions. No baked-in improvement percentages.
 - Typed provider boundary for the synthetic demo and a later FastAPI integration. Existing backend APIs and CSV work remain available.
-- Recharts workload/capacity chart, task timeline, aircraft service feed, crisis controls, recovery/approval panel, impact table.
+- Recharts workload/capacity chart, task timeline, aircraft service feed, crisis controls, recovery/approval panel.
 
 ## Phases
 
@@ -49,7 +48,7 @@ The user's latest request replaces the earlier light guided design with a premiu
 
 - Readability update: persistent light/dark theme switch in the top bar; light default, saved palette applied before first paint. Light surfaces, navy text, darker status/chart colors, and portal/timeline coverage. Contrast and saved-theme initialization have targeted checks.
 
-- Mission Control and Crisis Mode are functional, with shared timeline, task inspector, recovery explanations, local manager review, CSV input, and selected-day impact comparison.
+- Mission Control and Crisis Mode are functional, with shared timeline, task inspector, recovery explanations, local manager review, CSV input.
 - Migrated to Next.js 16 App Router, Tailwind, official shadcn/ui source components, and Recharts. Static export is copied to the existing desktop asset directory.
 - Eleven frontend tests pass: CSV validation, deterministic fixtures, qualification/shift/break/non-overlap constraints, fixed-original crisis evaluation, frozen past work, infeasible full absence, configurable task rules, and upload limits.
 - Thirty-eight backend regression tests pass for the retained weekly planner.

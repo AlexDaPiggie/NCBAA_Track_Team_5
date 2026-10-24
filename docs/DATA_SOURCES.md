@@ -10,10 +10,6 @@
 - Coverage is calculated as covered seat-hours divided by required seat-hours, with breaks reducing hourly capacity. This is a capacity estimate, not a task queue or flight-delay simulation.
 - Estimated labor is scheduled paid hours multiplied by illustrative role rates ($32 ramp, $35 fuel, $26 customer service). Breaks are assumed paid. Benefits, overtime premiums, and actual payroll rules are omitted. Both baseline and event rosters face the same event demand within each comparison.
 - Manager approval or rejection is saved in browser storage and can be downloaded. It does not dispatch workers.
-- The Impact Report now includes one historical reference: valid LAX large-carrier arrivals grouped by local hour across February 7–13, 2022. The seven daily arrival counts sum to 3,502. This dataset is shown for traffic-timing context only. It does not feed the demo forecast, task generation, or staffing plan.
-- The source is the U.S. DOT Bureau of Transportation Statistics (BTS) [Airline On-Time Performance data](https://transtats.bts.gov/DL_SelectFields.aspx?QO_fu146_anzr=b0-gvzr&gnoyr_VQ=FGK). BTS describes it as domestic flights reported by large air carriers and says times are local. The chart filters destination LAX, flight dates February 7–13, 2022, non-cancelled and non-diverted records, and valid actual arrival times. It sums the resulting counts by hour.
-- This is commercial airline airport traffic. It does not represent general aviation, FBO visits, service requests, staffing demand, or Super Bowl LXI in 2027. Passenger and fuel needs are absent from the source.
-- Source data has not been independently audited against FBO or airport records. The filtered hourly profile in `frontend/src/lib/aviation-context.ts` is an explanatory reference fixture, not model input.
 
 ## Separate weekly FastAPI planner
 

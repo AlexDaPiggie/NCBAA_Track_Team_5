@@ -30,7 +30,10 @@
 .ops-service-lane-label small{font-size:9px;color:var(--muted-foreground)}
 .ops-task-lane-number{height:25px;width:25px;display:grid;place-items:center;color:var(--muted-foreground);border:1px solid var(--border);border-radius:4px;background:var(--background);font-size:9px;font-variant-numeric:tabular-nums}
 .ops-service-task-block{height:25px;top:11px;padding:3px 2px;font-size:9px;line-height:17px;font-variant-numeric:tabular-nums;letter-spacing:-.2px}
-.ops-service-task-block>span{display:block;overflow:hidden;max-width:100%}
+.ops-service-task-block{overflow:visible}
+.ops-service-task-block>span{position:absolute;left:50%;top:-11px;transform:translateX(-50%);display:block;overflow:visible;max-width:none;padding:0 1px;border-radius:2px;background:var(--card);color:inherit;font-size:7px;line-height:9px;white-space:nowrap;pointer-events:none}
+.ops-task-view .ops-timeline-head>div>span{white-space:nowrap}
+.ops-task-view .ops-timeline-head>div>span:last-child{transform:translateX(-100%);text-align:right}
 .ops-service-task-block.conflict{overflow:visible}
 .ops-service-task-block.conflict:before{content:'!';position:absolute;top:-5px;right:-2px;width:10px;height:10px;font-size:8px;font-weight:700;line-height:10px;text-align:center;border-radius:50%;background:var(--status-red-text,#f3a0b1);color:var(--status-red-bg,#3d2631)}
 .ops-task-empty{display:flex;align-items:center;justify-content:center;gap:10px;padding:38px 20px;border:1px dashed var(--border);border-radius:6px;color:var(--muted-foreground)}

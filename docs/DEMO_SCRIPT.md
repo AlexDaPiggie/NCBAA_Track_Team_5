@@ -40,9 +40,6 @@ Open **7-Day Staffing Plan** at Medium demand. Show the current/proposed summary
 
 “These are calculated from the same fixed-seed synthetic aircraft and task assumptions. Fixed rules staff each shift to peak hourly need; a greedy assignment rule fills positions within hours and rest limits. This is not a global optimization or a claim of minimum cost. Both plans face the same event demand. Shift changes and costs reconcile with the summary. A manager reviews the actual proposed shifts before approving; the decision records locally and nothing is dispatched.”
 
-## Impact and close — 10 seconds
-
-Then open Impact Report if time allows. Its ordinary/event comparison is still a selected-day task replay. The LAX airline arrivals chart is historical context only, not FBO demand or a forecast. No real forecast accuracy is claimed.
 
 “Our goal is to make staffing gaps visible before the event, test the consequences, and give the manager an explainable recovery candidate.”
 

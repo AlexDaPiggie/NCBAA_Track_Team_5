@@ -12,7 +12,7 @@ export function groupTaskTimeline(results:TaskResult[],windowStart:number,window
       // Uncovered bars show requested work, rather than pretending an assignment exists.
       const start=result.assignment?.start??result.task.earliest;
       const end=result.assignment?.end??start+result.task.duration;
-      return {result,start:Math.max(windowStart,start),end:Math.min(windowEnd,end),layoutEnd:Math.max(end,start+18)+3};
+      return {result,start:Math.max(windowStart,start),end:Math.min(windowEnd,end),layoutEnd:Math.max(end,start+36)+3};
     }).filter(item=>item.end>item.start).sort((a,b)=>a.start-b.start||a.end-b.end||a.result.task.id.localeCompare(b.result.task.id));
     const lanes:TaskTimelineItem[][]=[];
     for(const item of items){

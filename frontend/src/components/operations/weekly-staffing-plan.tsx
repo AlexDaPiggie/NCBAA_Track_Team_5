@@ -3,7 +3,6 @@
 import {useMemo,useState} from 'react';
 import {Bar,BarChart,CartesianGrid,ResponsiveContainer,Tooltip as ChartTooltip,XAxis,YAxis} from 'recharts';
 import {CheckCheck,ChevronDown,Download,Info,TriangleAlert} from 'lucide-react';
-import {Badge} from '@/components/ui/badge';
 import {Button} from '@/components/ui/button';
 import {Card,CardContent} from '@/components/ui/card';
 import {Tabs,TabsList,TabsTrigger} from '@/components/ui/tabs';
@@ -25,7 +24,7 @@ function ScenarioSelector({level,onSelect,plan}:{level:DemandLevel;onSelect:(val
   return <section className="ops-week-step ops-week-scenario-step" aria-labelledby="weekly-step-scenario">
     <h2 id="weekly-step-scenario">Event demand</h2>
     <div className="ops-week-scenario-options">{LEVELS.map(item=><button key={item} type="button" className={`ops-week-scenario ${item===level?'selected':''}`} aria-pressed={item===level} aria-label={`${item} demand: ${plan.cases[item].demand.aircraft} aircraft`} onClick={()=>onSelect(item)}><b>{item}</b><small>{number(plan.cases[item].demand.aircraft)} aircraft</small></button>)}</div>
-    <span className="ops-week-period">8–14 Feb 2027</span><Badge className="ops-status ops-status-amber" variant="outline"><span/>SYNTHETIC DATA</Badge>
+    <span className="ops-week-period">8–14 Feb 2027</span>
   </section>;
 }
 

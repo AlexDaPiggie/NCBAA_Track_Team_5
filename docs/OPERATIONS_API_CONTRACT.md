@@ -31,7 +31,6 @@ Recovery uses five-minute start increments and an earliest-deadline greedy heuri
 - Required-work coverage is covered worker-minutes divided by required worker-minutes, weighted by task duration and required crew count.
 - Uncovered worker-hours are uncovered required crew-minutes / 60.
 - Allocated labor cost uses rostered shift hours and illustrative wage assumptions; paid breaks included. Without proposed workers, task reordering does not change cost. Proposed workers add their full paid-shift cost to the candidate only. The weekly estimate repeats that selected shift seven times.
-- Impact Report compares selected-day replays under ordinary and event demand profiles. It is not a seven-day constrained employee schedule.
 
 ## Review and provenance
 

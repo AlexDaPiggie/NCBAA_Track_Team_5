@@ -17,7 +17,6 @@ The project includes these data files:
 - [synthetic_employees.csv](backend/data/synthetic_employees.csv): fictional worker ID, department qualification, available hours, assumed hourly wage, and provenance.
 - [synthetic_requests.csv](backend/data/synthetic_requests.csv): department, arrival minute, service time, and provenance.
 - [real_jfk_hourly_departures.csv](backend/data/real_jfk_hourly_departures.csv): timestamp, observed JFK departures per hour, and provenance.
-- [aviation-context.ts](frontend/src/lib/aviation-context.ts): LAX commercial airline arrivals by local hour for February 7–13, 2022. The Impact Report displays them as context only; they do not drive demand or staffing.
 - [weekly-planner.ts](frontend/src/lib/weekly-planner.ts): browser-only seven-day staffing comparison using fixed-seed synthetic demand and workforce assumptions.
 
 The planner builds its standard hourly profile in code. The synthetic files are generated demo data; they are not records from an FBO. The trained option uses a model fitted to the generated training history.

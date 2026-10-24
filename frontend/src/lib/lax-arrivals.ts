@@ -9,4 +9,4 @@ export const laxArrivalProfiles = [
 ] as const;
 
 export const laxArrivalSource =
-  'Observed LAX commercial arrivals, 2022-02-07 through 2022-02-13; event-case scaling is assumed.';
+  'Observed LAX commercial arrivals, 2022-02-07 through 2022-02-13; event-case scaling is assumed. Mission Control normalizes the overlay to the synthetic demand range.';

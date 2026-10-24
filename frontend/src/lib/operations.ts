@@ -1,7 +1,6 @@
 /** Deterministic synthetic operations replay. This is a planning model, not dispatch. */
 import {laxArrivalProfiles} from './lax-arrivals.ts';
 
-
 export type Team = 'ramp' | 'fuel' | 'service';
 export type Week = 'normal' | 'event';
 export type DemandLevel = 'Low' | 'Medium' | 'High';

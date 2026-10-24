@@ -29,12 +29,6 @@ These sources show adjacent existing capabilities, not a comprehensive competito
 
 The synthetic fixtures and model artifact are in `backend/data/`. Regenerate fixtures with `python -m backend.model` and generated training history/model with `python -m backend.training`. The guided site defaults to synthetic data. Optional uploaded ordinary-week counts replace the ordinary demand profile and are not independently verified. Event factors and workforce rules remain assumptions. FAA sources provide airport traffic context, not FBO workload labels; no FAA counts train the default model.
 
-## Historical LAX reference added
-
-- The Impact Report includes an hourly distribution of 3,502 valid large-carrier LAX arrivals recorded February 7–13, 2022, during Super Bowl LVI week. The source and filter are documented in `docs/DATA_SOURCES.md` and the fixture is in `frontend/src/lib/aviation-context.ts`.
-- This is commercial-airline airport traffic. It is displayed as historical timing context only. It does not feed forecast, aircraft, FBO service-task, or staffing calculations. It is not an estimate of business aviation or FBO activity and does not forecast Super Bowl LXI in 2027.
-- BTS provides local actual arrival times. The fixture filters non-cancelled, non-diverted flights to LAX with valid actual arrival times, then groups arrivals by hour. Daily flight-date totals are not shown as arrival-date truth.
-
 ## Current task-replay command center
 
 - The dark Next.js website uses a deterministic synthetic TypeScript provider. It is not live airport telemetry or a connected task-level FastAPI service.
