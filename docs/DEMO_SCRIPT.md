@@ -45,3 +45,7 @@ Show Impact Report if time permits: ordinary-week and Super Bowl-week selected-d
 - Check data labels, task inspector, crisis changes, candidate constraints, remaining gaps, and manager review.
 - Use only computed current-run results. No preset improvement percentages.
 - Current visual walkthrough remains unverified because Computer Use was blocked by URL verification.
+
+## Task-first view
+
+Start the timeline in Tasks mode. Point to one aircraft service and open its inspector to show the qualified crew. A two-person job appears once. Use Show uncovered only after triggering a crisis; switch to Crew only when explaining breaks, absences, or worker overlap.

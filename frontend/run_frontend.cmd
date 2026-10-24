@@ -16,18 +16,18 @@ if errorlevel 1 (
 )
 
 set NEED_INSTALL=0
-if not exist "node_modules\@vitejs\plugin-react\package.json" set NEED_INSTALL=1
-if not exist "node_modules\@tailwindcss\vite\package.json" set NEED_INSTALL=1
+if not exist "node_modules\next\package.json" set NEED_INSTALL=1
+if not exist "node_modules\@tailwindcss\postcss\package.json" set NEED_INSTALL=1
 
 if "%NEED_INSTALL%"=="1" (
   echo Installing frontend packages...
   call npm.cmd ci
   if errorlevel 1 goto :install_failed
-  if not exist "node_modules\@vitejs\plugin-react\package.json" goto :install_failed
-  if not exist "node_modules\@tailwindcss\vite\package.json" goto :install_failed
+  if not exist "node_modules\next\package.json" goto :install_failed
+  if not exist "node_modules\@tailwindcss\postcss\package.json" goto :install_failed
 )
 
-echo Starting Apron website at http://127.0.0.1:5173
+echo Starting Apron website at http://127.0.0.1:3000
 call npm.cmd run dev
 exit /b %errorlevel%
 
