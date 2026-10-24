@@ -42,7 +42,11 @@ The queue uses the selected random seed. Plans use median, 85th percentile, or p
 
 For each recovery scenario, the planner searches additional Ramp, Fuel, and Customer Service headcount and starts each control at the smallest count that covers that role's modeled tasks when possible. If 100% role coverage cannot be reached within the 20-worker control limit, it selects the headcount that covers the most tasks and reports the remaining gap. A manager can adjust the number controls; each change recalculates the candidate schedule, coverage, and uncovered tasks using the same task scheduler. Counts are saved with the scenario in the current page session, and changing a count clears any previous manager decision.
 
+The recovery backlog and its coverage metrics exclude original gaps whose remaining service window had already expired by the 14:00 recovery start. Those remain visible in Mission Control, clearly separate from disruption-related work that can still be rescheduled.
+
 The page shows added cost for the selected 11:30–20:30 shift/day and a weekly estimate that repeats the same staffing seven times. Costs use the synthetic role hourly rate and full nine-hour paid shift (including its paid break). They are planning estimates, not payroll quotes. Proposed hires are not available for a current incident until a manager hires and schedules them. A decision record includes the proposed worker roster, headcounts, and cost estimates.
+
+Crisis Mode caps arrival delay to keep the selected flights' shifted service starts and durations inside the modeled 20:30 staffing cutoff. The trigger blocks any delayed service newly pushed outside that cutoff and asks the manager to reduce the delay.
 
 ## Data sources
 

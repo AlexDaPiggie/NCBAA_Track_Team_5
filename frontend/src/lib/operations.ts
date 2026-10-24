@@ -89,6 +89,22 @@ export function applyCrisis(original:Mission,crisis:Crisis):Mission{
   aircraft.sort((a,b)=>a.eta-b.eta||a.id.localeCompare(b.id));
   return {...original,aircraft,tasks:tasksForAircraft(aircraft,original.rules)};
 }
+export function maxSafeArrivalDelay(mission:Mission,delayedFlightCount:number,limit=120,step=15){
+  const selected=new Set(mission.aircraft.filter(a=>a.eta>=NOW).slice(0,delayedFlightCount).map(a=>a.id));
+  if(!selected.size)return limit;
+  const tasks=mission.tasks.filter(task=>selected.has(task.aircraftId));
+  if(!tasks.length)return limit;
+  const availableDelay=Math.min(limit,...tasks.map(task=>END-task.earliest-task.duration));
+  return Math.max(0,step*Math.floor(availableDelay/step));
+}
+export function crisisCreatesOutOfScopeTasks(mission:Mission,crisis:Crisis){
+  const before=new Map(mission.tasks.map(task=>[task.id,task]));
+  return applyCrisis(mission,crisis).tasks.some(task=>{
+    const original=before.get(task.id);
+    const crisisAffected=!original||task.earliest!==original.earliest;
+    return crisisAffected&&(task.earliest<NOW||task.earliest+task.duration>END);
+  });
+}
 export function workerAvailable(worker:Worker,window:Window,crisis:Crisis=noCrisis){
   return window.start>=worker.shift.start&&window.end<=worker.shift.end&&!overlap(window,worker.break)&&
     !(crisis.absentWorkerIds.includes(worker.id)&&overlap(window,{start:NOW,end:END}));

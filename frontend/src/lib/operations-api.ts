@@ -1,4 +1,4 @@
-import {createMission,applyCrisis,scheduleTasks,evaluateOriginal,metricsFor,createProposedWorkers,noHires,noCrisis,type Mission,type Schedule,type Crisis,type Week,type DemandLevel,type UploadedCount,type TaskRules,type Worker,type Team,type HireCounts} from './operations.ts';
+import {createMission,applyCrisis,scheduleTasks,evaluateOriginal,metricsFor,createProposedWorkers,noHires,noCrisis,NOW,END,type Mission,type Schedule,type Crisis,type Week,type DemandLevel,type UploadedCount,type TaskRules,type Worker,type Team,type HireCounts} from './operations.ts';
 
 /** DTOs for a future task-level FastAPI adapter. Existing weekly API remains separate. */
 export type MissionRequest = {week:Week;level:DemandLevel;day:number;seed:number;upload?:{name:string;rows:UploadedCount[]};rules?:TaskRules;workers?:Worker[]};
@@ -23,13 +23,17 @@ export const demoOperations:OperationsProvider = {
 export function recommendRecoveryHeadcount(mission:Mission,original:Schedule,crisis:Crisis):{counts:HireCounts;fullyCovered:Record<Team,boolean>}{
   const counts={...noHires},fullyCovered={} as Record<Team,boolean>,affected=applyCrisis(mission,crisis);
   for(const team of ['ramp','fuel','service'] as Team[]){
-    let bestCovered=-1,bestCount=0,taskCount=affected.tasks.filter(task=>task.team===team).length;
+    const recoverable=affected.tasks.filter(task=>task.team===team&&(
+      !!original.results.find(result=>result.task.id===task.id)?.assignment||
+      Math.max(task.earliest,NOW)+task.duration<=Math.min(task.deadline,END)));
+    const recoverableIds=new Set(recoverable.map(task=>task.id));
+    let bestCovered=-1,bestCount=0,taskCount=recoverable.length;
     fullyCovered[team]=taskCount===0;
     for(let count=0;count<=20&&!fullyCovered[team];count++){
       const added=createProposedWorkers(mission,{...noHires,[team]:count});
       const candidateMission={...mission,workers:[...mission.workers,...added]};
       const candidate=demoOperations.recover({mission:candidateMission,original,crisis});
-      const roleResults=candidate.results.filter(result=>result.task.team===team);
+      const roleResults=candidate.results.filter(result=>recoverableIds.has(result.task.id));
       const covered=roleResults.filter(result=>result.assignment).length;
       if(covered>bestCovered){bestCovered=covered;bestCount=count;}
       if(covered===taskCount){counts[team]=count;fullyCovered[team]=true;}
