@@ -3,7 +3,7 @@ export type Team = 'ramp' | 'fuel' | 'service';
 export type Week = 'normal' | 'event';
 export type DemandLevel = 'Low' | 'Medium' | 'High';
 export type Window = {start:number;end:number};
-export type Worker = {id:string;name:string;team:Team;qualification:string;shift:Window;break:Window;hourlyRate:number};
+export type Worker = {id:string;name:string;team:Team;qualification:string;shift:Window;break:Window;hourlyRate:number;proposed?:boolean};
 export type Aircraft = {id:string;type:string;eta:number;passengers:number;fuelService:boolean;stand:string;unexpected?:boolean;delayMinutes?:number};
 export type ServiceTask = {id:string;aircraftId:string;team:Team;label:string;earliest:number;deadline:number;duration:number;crewRequired:number};
 export type Assignment = {taskId:string;workerIds:string[];start:number;end:number};
@@ -15,7 +15,8 @@ export type Mission = {week:Week;level:DemandLevel;day:number;seed:number;worker
 export type Metrics = {tasks:number;coveredTasks:number;uncoveredTasks:number;coveragePercent:number;requiredWorkerHours:number;uncoveredWorkerHours:number;laborCost:number;reassignedTasks:number};
 export type Schedule = {results:TaskResult[];metrics:Metrics};
 export type RecoveryChange = {taskId:string;aircraftId:string;label:string;before:string;after:string;reason:string};
-export type ReviewRecord = {id:string;status:'approved'|'rejected';manager:string;notes:string;timestamp:string;mission:Pick<Mission,'week'|'level'|'day'|'seed'|'source'|'sourceName'>;crisis:Crisis;metrics:Metrics;assignments:Assignment[];snapshot:{modelVersion:string;aircraft:Aircraft[];workers:Worker[];tasks:ServiceTask[];originalMetrics:Metrics}};
+export type HireCounts = Record<Team,number>;
+export type ReviewRecord = {id:string;status:'approved'|'rejected';manager:string;notes:string;timestamp:string;mission:Pick<Mission,'week'|'level'|'day'|'seed'|'source'|'sourceName'>;crisis:Crisis;metrics:Metrics;hiringPlan:{counts:HireCounts;incrementalPerShift:number;weeklyIfRepeated:number};assignments:Assignment[];snapshot:{modelVersion:string;aircraft:Aircraft[];workers:Worker[];tasks:ServiceTask[];originalMetrics:Metrics}};
 export type UploadedCount = {hour:number;aircraft:number;passengers:number;fuel_requests:number};
 export const START=720, END=1230, NOW=840;
 export const teamLabels:Record<Team,string>={ramp:'Ramp operations',fuel:'Fuel service',service:'Customer service'};
@@ -33,6 +34,21 @@ export function createWorkers():Worker[]{
   return teams.map((team,i)=>({id:`${team==='ramp'?'R':team==='fuel'?'F':'C'}-${String(++index[team]).padStart(2,'0')}`,name:names[i],team,
     qualification:team==='ramp'?'Synthetic ramp qualification':team==='fuel'?'Synthetic fuel-service qualification':'Synthetic customer-service qualification',
     shift:{start:690,end:1230},break:{start:breaks[i],end:breaks[i]+30},hourlyRate:team==='ramp'?32:team==='fuel'?35:26}));
+}
+export const noHires:HireCounts={ramp:0,fuel:0,service:0};
+export function createProposedWorkers(mission:Mission,counts:HireCounts):Worker[]{
+  return (['ramp','fuel','service'] as Team[]).flatMap((team,teamIndex)=>{
+    const template=mission.workers.find(worker=>worker.team===team);
+    if(!template)return [];
+    return Array.from({length:Math.max(0,Math.min(20,Math.floor(counts[team]||0)))},(_,i)=>{
+      const breakStart=750+((i+teamIndex*2)%8)*30;
+      return {id:`PLAN-${team.toUpperCase()}-${String(i+1).padStart(2,'0')}`,name:`Proposed ${teamLabels[team]} hire ${i+1}`,team,
+        qualification:template.qualification,shift:{...template.shift},break:{start:breakStart,end:breakStart+30},hourlyRate:template.hourlyRate,proposed:true};
+    });
+  });
+}
+export function estimatedHireShiftCost(workers:Worker[]){
+  return workers.reduce((sum,worker)=>sum+(worker.shift.end-worker.shift.start)/60*worker.hourlyRate,0);
 }
 export function tasksForAircraft(aircraft:Aircraft[],rules:TaskRules=defaultTaskRules):ServiceTask[]{
   return aircraft.flatMap(a=>(['ramp','service',...(a.fuelService?['fuel']:[])] as Team[]).map(team=>{

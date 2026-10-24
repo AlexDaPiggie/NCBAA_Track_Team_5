@@ -188,6 +188,16 @@
 :root[data-theme="light"] .ops-report-table thead th{background:#edf3f8;color:#435e77}
 :root[data-theme="light"] .ops-report-table tbody th{color:#254864}
 :root[data-theme="light"] .ops-report-table th>span{color:#52677d}
+:root[data-theme="light"] .ops-hiring-role{background:#f6f9fc;border-color:#d3e0e9}
+:root[data-theme="light"] .ops-hiring-role>span:first-child b{color:#173c57}
+:root[data-theme="light"] .ops-hiring-role>span:first-child small,:root[data-theme="light"] .ops-hiring-control small,:root[data-theme="light"] .ops-hiring-rate,:root[data-theme="light"] .ops-hiring-note{color:#52677d}
+:root[data-theme="light"] .ops-hiring-role>span:first-child .ops-hiring-recommendation{color:#17627c}
+:root[data-theme="light"] .ops-hiring-role>span:first-child .ops-hiring-recommendation.unreachable{color:#a52a48}
+:root[data-theme="light"] .ops-hiring-control input{background:#fff;border-color:#bdcddd;color:#17324b}
+:root[data-theme="light"] .ops-hiring-cost>div{background:#edf5fa;border-color:#cbdce8}
+:root[data-theme="light"] .ops-hiring-cost span{color:#31516b}
+:root[data-theme="light"] .ops-hiring-cost b{color:#176c49}
+:root[data-theme="light"] .ops-recommended-staffing{color:#176c49}
 :root[data-theme="light"] .ops-report-table td{color:#435e77}
 :root[data-theme="light"] .ops-report-table .candidate{background:#eff8f3}
 :root[data-theme="light"] .ops-report-table .candidate td{color:#176c49}

@@ -38,6 +38,12 @@ Example: 4 aircraft, 18 passengers, 2.6 fuel requests → **2 seats per departme
 
 The queue uses the selected random seed. Plans use median, 85th percentile, or peak demand. Shift plans use fictional workers, first-available assignment, and configured break, weekly-hour, and rest limits. Both rosters face the same disruption. A manager reviews the result.
 
+## Recovery Planner: proposed staffing
+
+For each recovery scenario, the planner searches additional Ramp, Fuel, and Customer Service headcount and starts each control at the smallest count that covers that role's modeled tasks when possible. If 100% role coverage cannot be reached within the 20-worker control limit, it selects the headcount that covers the most tasks and reports the remaining gap. A manager can adjust the number controls; each change recalculates the candidate schedule, coverage, and uncovered tasks using the same task scheduler. Counts are saved with the scenario in the current page session, and changing a count clears any previous manager decision.
+
+The page shows added cost for the selected 11:30–20:30 shift/day and a weekly estimate that repeats the same staffing seven times. Costs use the synthetic role hourly rate and full nine-hour paid shift (including its paid break). They are planning estimates, not payroll quotes. Proposed hires are not available for a current incident until a manager hires and schedules them. A decision record includes the proposed worker roster, headcounts, and cost estimates.
+
 ## Data sources
 
 - **Default:** synthetic hourly pattern or a model trained on synthetic history. Scores measure synthetic data only.
