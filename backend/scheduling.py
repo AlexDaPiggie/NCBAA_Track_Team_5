@@ -8,7 +8,7 @@ WORKER_POOL_SIZE = 30  # Matches the synthetic employee fixture per department.
 
 
 def _plan_roster(needs, config, shift_hours, max_weekly_hours, minimum_rest_hours,
-                break_minutes, prefix):
+                break_minutes, prefix, worker_pool_size):
     """Cover each fixed shift using synthetic single-skill workers and hard limits."""
     shifts_per_day = 24 // shift_hours
     roster = []
@@ -22,13 +22,17 @@ def _plan_roster(needs, config, shift_hours, max_weekly_hours, minimum_rest_hour
         workers = []
         slots = []
         assigned = 0
+        requested = 0
         for day in range(7):
             for shift_index in range(shifts_per_day):
                 start = day * 24 + shift_index * shift_hours
                 end = start + shift_hours
                 target = max(hourly.get(hour, rules.minimum)
                              for hour in range(start, end))
-                for seat in range(target):
+                requested += target
+                # A worker cannot cover two simultaneous seats. Retain the full
+                # requested count, but avoid allocating impossible extra slots.
+                for seat in range(min(target, worker_pool_size)):
                     slots.append((day, start, end, shift_index, seat))
 
         for day, start, end, shift_index, seat in slots:
@@ -38,7 +42,7 @@ def _plan_roster(needs, config, shift_hours, max_weekly_hours, minimum_rest_hour
             if eligible:
                 worker = min(eligible, key=lambda item: (item['hours'], item['id']))
             else:
-                if len(workers) >= WORKER_POOL_SIZE:
+                if len(workers) >= worker_pool_size:
                     continue
                 worker_id = f'{prefix}-{dept_code}-{len(workers)+1:03d}'
                 worker = dict(id=worker_id, hours=0, last_end=-minimum_rest_hours)
@@ -59,7 +63,7 @@ def _plan_roster(needs, config, shift_hours, max_weekly_hours, minimum_rest_hour
                                provenance='synthetic worker; assumed available and qualified'))
             assigned += 1
         workers_by_department[department] = workers
-        unfilled_by_department[department] = len(slots)-assigned
+        unfilled_by_department[department] = requested-assigned
     return roster, workers_by_department, unfilled_by_department
 
 
@@ -98,11 +102,12 @@ def _evaluate(roster, workers_by_department, event_rows, requirements, config,
             demand_hours += required
             scheduled = [shift for shift in roster if shift['department'] == department
                          and shift['week_start_hour'] <= hour < shift['week_end_hour']]
+            if in_disruption:
+                scheduled = [shift for shift in scheduled if shift['employee_id'] not in absent_ids]
             break_loss = sum(max(0, min(hour+1, shift['break_end'])
                                  - max(hour, shift['break_start']))
                              for shift in scheduled) / 1.0
-            absent = sum(shift['employee_id'] in absent_ids for shift in scheduled) if in_disruption else 0
-            capacity = max(0.0, len(scheduled)-break_loss-absent)
+            capacity = max(0.0, len(scheduled)-break_loss)
             gap = max(0.0, required-capacity)
             uncovered_seat_hours += gap
             covered_seat_hours += min(required, capacity)
@@ -143,7 +148,8 @@ def compare_staffing_plans(event_rows, ordinary_rows, event_requirements,
                            config=None, seed=42, shift_hours=8, break_minutes=30,
                            max_weekly_hours=40, minimum_rest_hours=8, absences=2,
                            surge_percent=50, service_delay_percent=25,
-                           disruption_day=5, disruption_start=15, disruption_hours=4):
+                           disruption_day=5, disruption_start=15, disruption_hours=4,
+                           worker_pool_size=WORKER_POOL_SIZE):
     """Build ordinary/event rosters and evaluate both against the same stressed event."""
     config = config or DEFAULTS
     if shift_hours not in (6, 8, 12) or 24 % shift_hours:
@@ -154,6 +160,8 @@ def compare_staffing_plans(event_rows, ordinary_rows, event_requirements,
         raise ValueError('Maximum weekly hours must fit at least one shift and be at most 84')
     if minimum_rest_hours < 0 or minimum_rest_hours > 24:
         raise ValueError('Minimum rest must be between 0 and 24 hours')
+    if not 1 <= worker_pool_size <= 100:
+        raise ValueError('Worker pool size must be between 1 and 100 per department')
     if not 0 <= absences <= 10 or not 0 <= surge_percent <= 200 or not 0 <= service_delay_percent <= 200:
         raise ValueError('Disruption values are outside the supported range')
     if not 0 <= disruption_day <= 6 or not 0 <= disruption_start <= 23 or not 1 <= disruption_hours <= 8:
@@ -165,10 +173,10 @@ def compare_staffing_plans(event_rows, ordinary_rows, event_requirements,
     ordinary_requirements = get_requirements(ordinary_rows, config)
     baseline, baseline_workers, baseline_unfilled = _plan_roster(
         ordinary_requirements, config, shift_hours, max_weekly_hours,
-        minimum_rest_hours, break_minutes, 'BASE')
+        minimum_rest_hours, break_minutes, 'BASE', worker_pool_size)
     proposed, proposed_workers, proposed_unfilled = _plan_roster(
         event_requirements, config, shift_hours, max_weekly_hours,
-        minimum_rest_hours, break_minutes, 'EVENT')
+        minimum_rest_hours, break_minutes, 'EVENT', worker_pool_size)
     kwargs = dict(max_weekly_hours=max_weekly_hours, break_minutes=break_minutes,
                   absences=absences, surge_percent=surge_percent,
                   service_delay_percent=service_delay_percent,
@@ -183,6 +191,7 @@ def compare_staffing_plans(event_rows, ordinary_rows, event_requirements,
                 assumptions=dict(shift_hours=shift_hours, break_minutes=break_minutes,
                                  max_weekly_hours=max_weekly_hours,
                                  minimum_rest_hours=minimum_rest_hours,
+                                 worker_pool_size=worker_pool_size,
                                  employees_assumed_available=True,
                                  employee_skills='Each synthetic employee has one department qualification.',
                                  break_policy='Break time reduces coverage and is included in paid shift hours for cost estimates; pay treatment is an assumption.',

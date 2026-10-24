@@ -1,36 +1,47 @@
-# Demo script — CrewPilot AI
+# CrewPilot AI command-center demo
 
-**Target length:** 3 minutes for rehearsal. The Track 1 slides do not state a pitch duration; confirm with organizers. Track 2 explicitly mentions a 3-minute pitch.
+Rehearse about three minutes. Track 1 does not specify a pitch length in the supplied PDF.
 
-## 0:00–0:25 — Problem and guardrails
+## Mission Control — 45 seconds
 
-“An FBO manager has to prepare staffing for an event week without knowing exactly when workload will peak. CrewPilot is a staffing planning aid: it uses synthetic data today, makes its assumptions visible, and leaves every schedule decision with the manager.”
+“An FBO preparing for Super Bowl week needs to connect aircraft demand with qualified staffing. CrewPilot shows that operation in one place: arrivals, work coverage, available crew, and uncovered services.”
 
-## 0:25–0:55 — Baseline versus event week
+Keep Super Bowl week, medium case, Saturday, fixed seed. Show the demand/capacity chart and arrival-service feed. Click a timeline block.
 
-Show the ordinary synthetic week next to the seven-day event cases. Switch among low, medium, and high. Point to the held-out forecast error on the Demand page and say it measures generated data only, not FBO accuracy.
+“Every service is tied to a fictional aircraft. Each assignment checks the required qualification, service deadline, shift, break, and worker overlap. This is labeled synthetic data, not live airport traffic.”
 
-## 0:55–1:35 — Proposed coverage
+## Crisis Mode — 50 seconds
 
-Show hourly workload and required staff seats. Open Shift Planner, keep the visible synthetic shift assumptions, and build baseline and event rosters. Point out that shifts obey the configured weekly cap and rest gap, with staggered breaks. Mention that workforce rules and wages are assumptions, not validated aviation policy.
+Choose **Stacked disruption** and click **Trigger disruption**.
 
-## 1:35–2:20 — Disruption stress test
+“Four unexpected aircraft arrive. Two ramp workers call out. The next three expected arrivals shift by 45 minutes. We keep original assignments fixed so you can see the failure points.”
 
-Open Stress Test. Keep two call-outs, a 50% arrival surge, and a 25% service delay. Run the comparison and show uncovered seat-hours for both rosters under the same event demand and disruption. If the 30-worker synthetic pool cannot fill a shift, show the unfilled slots plainly.
+Show the crisis banner, before/after table, changed available crew, delayed arrivals, red timeline conflicts and uncovered-task queue. Read only the values calculated by the current run.
 
-## 2:20–2:45 — Human approval
+## Recovery — 50 seconds
 
-Show the roster as pending. A manager can approve or reject it with notes. State: “CrewPilot never dispatches staff, authorizes aircraft movement, or handles passenger information.”
+Click **Calculate recovery candidate**.
 
-## 2:45–3:00 — Close
+“Now a transparent scheduling heuristic reassigns eligible crew and service times. It preserves feasible work already underway. These explanations show what changed and which checks passed.”
 
-“CrewPilot turns an uncertain event forecast into a staffing plan the manager can inspect, stress-test, and approve. The next step is validating task and workforce assumptions with an FBO operations expert.”
+Compare covered tasks and remaining gaps under exactly the same affected workload. Point out that allocated labor cost is unchanged because the workforce is unchanged. Do not promise complete coverage or a global optimum.
 
-## Demo checklist
+## Human decision — 25 seconds
 
-- Reset to fixed seed before presenting.
-- Verify ordinary/event and low/medium/high labels are visible.
-- Confirm the disruption affects baseline and proposal equally.
-- Use only metrics produced by the current run.
-- Keep synthetic label and approval-pending state visible.
-- Have a screenshot/recording fallback if the live environment fails.
+“CrewPilot recommends. A manager reviews remaining gaps and approves or rejects. This creates a browser-local planning record and a downloadable snapshot. It never sends assignments to employees or authorizes aircraft movement.”
+
+For test-only demonstration use “Demo manager” and notes “Synthetic replay; not an operational instruction.”
+
+## Impact and close — 10 seconds
+
+Show Impact Report if time permits: ordinary-week and Super Bowl-week selected-day comparisons. State that this daily replay does not implement a full seven-day employee roster or establish real forecast accuracy. The retained FastAPI weekly model is a separate integration step.
+
+“Our goal is to make staffing gaps visible before the event, test the consequences, and give the manager an explainable recovery candidate.”
+
+## Before presenting
+
+- Run `npm.cmd run dev` in `frontend`; the default local task demo needs no API.
+- Reset disruption and choose Saturday / event week / medium demand.
+- Check data labels, task inspector, crisis changes, candidate constraints, remaining gaps, and manager review.
+- Use only computed current-run results. No preset improvement percentages.
+- Current visual walkthrough remains unverified because Computer Use was blocked by URL verification.

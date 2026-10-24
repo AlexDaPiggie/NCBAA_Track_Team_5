@@ -1,5 +1,7 @@
 # CrewPilot AI MVP plan
 
+Current frontend direction: the user's dark aviation command center, documented in `docs/COMMAND_CENTER_PLAN.md`. Mission Control and Crisis Mode are the first delivery priority. The selected-day task provider and the retained weekly Python planner are distinct models; see their separate API contracts. The guided light-site notes below describe the preceding implementation phase.
+
 ## Decision
 
 Implement the event-week staffing stress tester in the existing repository stack where feasible. Optimize for a complete, inspectable demo; do not add unrelated FBO functions. All outputs remain manager-reviewed drafts.
@@ -10,13 +12,17 @@ The current app uses React, TypeScript, and Vite for the website, with FastAPI/P
 
 ## Current website scope
 
+The redesigned website uses four guided steps: Demand, Staffing plan, Stress test, Review. It opens with a ready synthetic demo and supports an optional validated ordinary-week CSV. The interface uses one light aviation design and plain-language explanations. See `docs/WEBSITE_REDESIGN_PLAN.md`.
+
 - Shows ordinary-week demand against low, medium, and high synthetic event-week cases.
 - Shows a chronological synthetic holdout forecast score beside a simple baseline; this is not real FBO accuracy.
 - Compares coverage policies using the same seeded service requests, with cost, wait, and delay metrics.
 - Builds ordinary-week and event-week worker rosters with synthetic IDs, shifts, staggered breaks, minimum rest, and maximum weekly hours.
 - Stress-tests both rosters against the same arrival surge, service delay, and synthetic call-outs; reports uncovered seat-hours and any unfilled roster slots.
 - Explains synthetic assumptions and uncertainty and keeps manager approval as the decision gate.
-- Employee availability is assumed; the 30-worker-per-department pool, qualifications, and labor settings are synthetic. This is not a real employee schedule or operational dispatch tool.
+- Links to public airport-traffic context and documents VNY source figures in the research notes, separately from FBO demand.
+- Event factors, task times, illustrative wages, shift rules, disruptions, and worker pool size are editable. Defaults are synthetic assumptions.
+- Employee availability is assumed; qualifications and labor settings are unverified. This is not a real employee schedule or operational dispatch tool.
 
 ## 48-hour plan
 

@@ -1,134 +1,97 @@
-# Apron · FBO Staffing Lab
+# CrewPilot AI — Aviation operations command center
 
-Apron is a local demo for planning staff at an FBO. An FBO is a business at an airport that serves private and general aviation aircraft.
-## Latest: synthetic event-week planning comparison
+An aviation-focused staffing demo with light and dark modes for **The Intelligent FBO** track. Built with **Next.js App Router, TypeScript, Tailwind CSS, official shadcn/ui components, and Recharts**.
 
-The application defaults to a forecast trained and checked on generated synthetic history. The Demand page shows its held-out error beside a simple baseline and labels both as synthetic validation, not real-world accuracy. An optional JFK airline-activity proxy remains available for exploration; it is not Los Angeles, private aviation, or FBO traffic.
+Use the **Light mode / Dark mode** switch in the top bar to change appearance. Light mode is the readable default for new visitors. Your choice is saved in this browser and restored before the page paints. Both modes cover charts, task timelines, warnings, dialogs, and reports. Light-mode body text, muted labels, and status palettes are checked against 4.5:1 contrast.
 
-Overview and Compare Plans show an ordinary-week profile against low, medium, and high event-week cases, with the staffing seat peaks for each case. Plan options also report same-demand costs and service outcomes. The assumption panel explains that scenarios are planning cases, not confidence intervals. Manager approval remains required.
-
-Synthetic data and task requests are generated deterministically from a fixed seed. JFK proxy settings remain optional. The sections below explain setup and shared simulation assumptions.
-
-
-The app estimates hourly work, compares staffing plans, and simulates waiting requests. A manager reviews any plan. The app does not assign real employees or control aircraft.
-
-## How to use the website
-
-1. Start the backend and website using the steps below.
-2. At the top, choose **Quiet**, **Normal**, or **Busy** demand. Click **Run Simulation**.
-3. Choose **Summary** to compare ordinary-week demand with all three event-week cases. Choose **Demand** to view hourly profiles and synthetic holdout accuracy. Choose **Staffing** to see required seats by hour.
-4. Choose **Live Floor** to watch sample service requests arrive, wait, and get served. Use **+ / −** to change the number of staff seats.
-5. Choose **Try a Plan** to change staff seats or service times. Click **Apply Changes & Run** to update results.
-6. Choose **Compare Plans** to compare cost, wait time, and unfinished work. Apron uses the same sample requests for each plan.
-7. Choose **Shift Planner** or **Stress Test**, set synthetic shift rules and disruptions, then build the baseline and event rosters. Compare coverage under the same surge, delay, and call-outs.
-8. Review the generated shifts and breaks. Enter a manager name and notes to approve or reject the roster; the decision is saved locally.
-
-**More settings** has a random seed and demand scaling controls. Use the same seed to repeat a comparison. A staff seat means one qualified worker available at a time. Shift Planner uses synthetic employee IDs only; it never assigns real named employees.
-
-Departments in this demo: Passenger Services, Ramp Operations, and Fuel Services. This is a **staffing** project. “Fuel Services” means planning staff for fuel requests. It does not plan how much fuel to load.
-
-## Data and limits
-
-The default aircraft activity model is trained on generated synthetic history. JFK airline departures are available only as an optional proxy and are not FBO or Los Angeles data. Passenger counts, fuel demand, workers and service requests remain assumptions or synthetic. No mode has been validated for real FBO operations.
-
-Service times, wages, staffing minimums, passenger counts, event multipliers, break durations, maximum hours, and rest periods are assumptions. They are not verified FBO rules or Super Bowl forecasts. Low, medium, and high are planning cases, not confidence intervals. Forecast scores come from generated holdout data and are not real-world accuracy. Shift plans use synthetic qualified workers who are assumed available; the model does not cover actual employee availability, fatigue, travel between tasks, or aircraft-task safety rules. Call-outs, arrival surges, and longer service times are synthetic stress inputs. Ask an FBO expert to review assumptions before treating results as realistic.
-
-## Desktop program on Windows
-
-Create the Python environment, then install the desktop dependencies and build:
+## Start the website
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements-desktop.txt
 cd frontend
 npm.cmd ci
 npm.cmd run dev
-cd ..
-powershell -ExecutionPolicy Bypass -File .\build-desktop.ps1
 ```
 
-Run `dist\ApronStaffingLab\ApronStaffingLab.exe`. Copy the entire program directory when sharing it. Edge WebView2 Runtime is required. No separate browser or backend terminal is needed. Approved decisions are stored locally under `%LOCALAPPDATA%\ApronStaffingLab`.
+Open **http://127.0.0.1:5173**. Keep the terminal open. Node 20.9+ is required by Next.js; tests were run with Node 24. The default task-level demo runs locally in the browser; it does not require FastAPI or an external data service.
 
-## Development preview on Windows
+## Core demo
 
-You need Python and Node.js installed. Open this folder in VS Code.
+1. **Mission Control:** inspect aircraft demand, qualified crew capacity, risk, service activity, and the task timeline. Use the mission-day selector and ordinary/Super Bowl demand profiles.
+2. **Crisis Mode:** choose unexpected aircraft, specific synthetic crew absences, and arrival delays. Click **Trigger disruption**. Original assignments remain fixed; newly infeasible services become explicit conflicts.
+3. **Recovery Planner:** click **Calculate recovery candidate**. Inspect reassigned workers/times, explanations, remaining uncovered work, and unchanged allocated labor cost. Approve or reject a local draft and download the decision record.
+4. **Workforce Timeline:** filter teams and click aircraft task blocks or uncovered-task entries for deadlines, required qualification, crew count, and feasibility explanations.
+5. **Impact Report:** compare original and candidate outcomes under ordinary-week and event-week demand profiles. Values are calculated for the selected-day replay, not baked-in improvement claims.
 
-**Terminal 1 — backend**
+The top mission clock is 14:00 PST in an illustrative 8–14 February 2027 window. Nothing is live airport telemetry. Workers, aircraft identities, tasks, service rules, and disruptions are synthetic. The date window is a product choice, not an organizer-prescribed date range.
+
+## What the model calculates
+
+The pure TypeScript engine generates deterministic demand with a fixed seed. Tasks require a specific team qualification, earliest start, finish deadline, duration, and simultaneous crew count. Feasible assignments must fit shift and break windows and cannot overlap on the same worker.
+
+Crisis Mode adds service tasks for unexpected aircraft, makes selected workers unavailable from 14:00, and shifts the next three expected arrivals and task windows by the chosen delay. It first evaluates the original plan without silently reassigning work.
+
+Recovery runs an earliest-deadline greedy heuristic with five-minute start increments. Feasible in-progress and completed tasks are retained. It does not establish a global optimum. Remaining uncovered work, zero improvement, or worse outcomes must be shown honestly.
+
+- **Required-work coverage:** covered crew-minutes divided by required crew-minutes, weighted by duration and required worker count.
+- **Uncovered tasks:** tasks without a full feasible crew assignment before the deadline.
+- **Uncovered worker-hours:** required crew-minutes for uncovered tasks / 60.
+- **Allocated labor cost:** same rostered paid shift hours and illustrative wages for original and candidate. Reordering work does not magically reduce labor cost.
+- **Risk label:** a demo rule based on uncovered task share: none = low; up to 15% = watch; above 15% = high.
+
+This selected-day replay does **not** evaluate full-week labor/rest rules, actual queue waits, or real forecast accuracy. Those are separate from the existing Python weekly planning model. Task durations and workforce rules need validation with an FBO expert.
+
+## Data and optional upload
+
+Open **Data & assumptions** to inspect provenance and modeled rules. CSV can replace the ordinary-week aggregate demand profile. Download a synthetic sample from the dialog.
+
+Required headers: `hour,aircraft,passengers,fuel_requests`. Exactly 168 rows, one for each hour 0–167 of Monday–Sunday. Counts must be finite and nonnegative. Extra identity columns, missing hours, duplicate hours, malformed numeric values, and files over 100 KB are rejected. The selected-day task replay supports up to 80 aircraft in the eight-hour arrival window; larger profiles are rejected with an explanation.
+
+Uploaded counts are not independently verified. Aircraft tasks, fictional worker identities, qualifications, task durations, and workforce remain synthetic assumptions. Uploading a week does not train or validate a forecast. The original CSV is not saved. Counts remain in browser memory until reset/refresh. Browser-local decision records include the generated mission snapshot, source metadata, assignments, assumptions implicit in the tasks/workers, and calculated metrics.
+
+Manager approval never dispatches employees or authorizes aircraft movement. No real passenger identities are used. Fuel service means staffing work, not fuel loading or inventory planning.
+
+## Checks and production build
+
+```powershell
+cd frontend
+npm.cmd run typecheck
+npm.cmd test
+npm.cmd run build
+```
+
+Next.js exports the website to `frontend/out`, then copies it to `frontend/dist` for compatibility with the existing desktop packager. No network font download is needed. Recharts animations are disabled and CSS respects reduced motion. Warnings use text and icons as well as color. shadcn/ui dialogs, sliders, tabs, tooltips, and buttons provide keyboard-accessible primitives.
+
+A manual browser walkthrough was blocked by Computer Use's inability to verify the current Chrome URL in this session. Build, deterministic engine, API, and HTTP checks do not substitute for a completed visual/mobile walkthrough.
+
+## Existing FastAPI weekly planner
+
+The Python engine is retained separately, including synthetic holdout metrics, ordinary/event weekly rosters, configurable break/rest/weekly constraints, validated aggregate uploads, stress tests, and SQLite review records.
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r backend/requirements-lock.txt
-.\.venv\Scripts\python.exe -m backend.model
-.\.venv\Scripts\python.exe -m uvicorn backend.main:app --reload
-```
-
-**Terminal 2 — website**
-
-```powershell
-cd frontend
-npm.cmd ci
-npm.cmd run dev
-```
-
-Open http://127.0.0.1:5173. Keep both terminals open while using the app. To stop a server, press **Ctrl+C** in its terminal.
-
-### If simulation shows a 404
-
-The website reached a server, but it did not find Apron's simulation API. In Terminal 1, stop the server with **Ctrl+C**. From the project root, start the backend again:
-
-```powershell
 .\.venv\Scripts\python.exe -m uvicorn backend.main:app --reload --port 8000
 ```
 
-Check http://127.0.0.1:8000/docs. If the API page does not open, the backend is not running on the expected port. Keep it running, then refresh the website.
-
-## Where things live
-
-- [frontend/src/main.tsx](frontend/src/main.tsx) — pages, controls, charts, and manager review.
-- [frontend/src/DepartmentView.tsx](frontend/src/DepartmentView.tsx) — animated request and staff-seat replay.
-- [backend/main.py](backend/main.py) — API for simulations, replay, staffing plans, and manager decisions.
-- [backend/model.py](backend/model.py) — demand, staffing needs, and waiting-line simulation.
-- [backend/scheduling.py](backend/scheduling.py) — synthetic shift roster, break capacity, rest/hour limits, and disruption comparison.
-- [backend/training.py](backend/training.py) — train and measure the demo forecast model.
-- [backend/data](backend/data) — synthetic input files and trained model.
-- [backend/tests](backend/tests) — automated checks.
-
-## API summary
-
-- `POST /api/simulate` — runs the selected demand case and returns the hourly forecast, ordinary-week comparison profile, staffing requirements, plan metrics, provenance, and synthetic holdout report when the trained model is selected.
-- `GET /api/scenario-summary` — accepts `multiplier`, `forecast_mode`, `proxy_scale`, and JSON `service_minutes` query parameters; returns ordinary-week totals plus low/medium/high event-week totals, peak activity, and peak concurrent seats by department.
-- `POST /api/replay` — returns the seeded request trace for a selected staffing option.
-- `POST /api/staffing-plan` — accepts the simulation inputs plus shift length, break minutes, weekly hour cap, rest gap, and disruption settings; builds baseline/event rosters and evaluates both under the same call-outs, arrival surge, and service delay.
-- `POST /api/staffing-decisions` — recomputes and saves manager approval or rejection for a staffing roster.
-- `POST /api/decisions` — stores a manager's approve/reject decision locally for a simulation snapshot.
-
-Interactive request and response schemas are available at `http://127.0.0.1:8000/docs` while the backend is running.
-
-## Useful commands
-
-Run backend tests:
+Schemas: http://127.0.0.1:8000/docs. Backend tests:
 
 ```powershell
-python -m pytest backend/tests -q
+.\.venv\Scripts\python.exe -m pytest backend/tests -q
 ```
 
-Build the website:
+The command center currently uses `demoOperations`; it does not claim that the weekly endpoints power the task-level dashboard. The request/response DTOs and async integration interface are in `frontend/src/lib/operations-api.ts`. Proposed task-level endpoints are documented in `docs/OPERATIONS_API_CONTRACT.md`; they are not implemented yet. Existing weekly endpoints are documented in `docs/API_CONTRACT.md`.
 
-```powershell
-cd frontend
-npm.cmd run build
-```
+For the optional Windows desktop package, install `requirements-desktop.txt` and run `build-desktop.ps1`. Rebuild any old executable to include the Next.js export. Existing storage and executable names remain `ApronStaffingLab` for compatibility.
 
-Retrain the synthetic demo forecast:
+## Architecture
 
-```powershell
-python -m backend.training
-```
-
-## Terms
-
-- **Staff seat:** one qualified worker available to serve requests at the same time.
-- **Baseline:** the simple starting staffing plan.
-- **Scenario:** a low, medium, or high demand level.
-- **Simulation:** a repeatable test of how requests wait for available staff.
-- **Synthetic:** generated example data, not collected from a real FBO.
+- `frontend/src/app` — Next.js layout, page, design tokens, responsive dark styles.
+- `frontend/src/components/operations/command-center.tsx` — Mission Control, Crisis Mode and shared timeline/review/report views.
+- `frontend/src/components/ui` — official shadcn/ui components, locally owned and themed.
+- `frontend/src/lib/operations.ts` — pure synthetic data, constraints, fixed-plan evaluation, recovery, metrics, explanations.
+- `frontend/src/lib/operations-api.ts` — typed demo and future HTTP integration boundary.
+- `frontend/src/demand-csv.ts` — aggregate CSV validation, sample, exports.
+- `backend` — retained weekly staffing API and tests.
+- `docs/COMMAND_CENTER_PLAN.md` — architecture, alternatives, build phases, guardrails.
+- `docs/ASSUMPTIONS.md` and `DATA_SOURCES.md` — evidence and assumptions.
+- `docs/DEMO_SCRIPT.md` — judge walkthrough.

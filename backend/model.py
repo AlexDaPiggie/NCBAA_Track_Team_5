@@ -21,12 +21,14 @@ DEFAULTS = {'Passenger Services': Department(5, 1, 26),
             'Ramp Operations': Department(24, 2, 32),
             'Fuel Services': Department(30, 1, 35)}
 
-def forecast(scenario='Medium', multiplier=1.0, week_type='event'):
+SCENARIO_MULTIPLIERS = {'Low': 1.15, 'Medium': 1.4, 'High': 1.7}
+
+def forecast(scenario='Medium', multiplier=1.0, week_type='event', scenario_multipliers=None):
     """Synthetic planning profile; event multipliers are assumptions, not forecasts."""
     if week_type not in ('ordinary', 'event'):
         raise ValueError('week_type must be ordinary or event')
-    factor = (1.0 if week_type == 'ordinary' else
-              {'Low': 1.15, 'Medium': 1.4, 'High': 1.7}[scenario]) * multiplier
+    factors = scenario_multipliers or SCENARIO_MULTIPLIERS
+    factor = (1.0 if week_type == 'ordinary' else factors[scenario]) * multiplier
     rows = []
     for hour in range(168):
         day, clock = divmod(hour, 24)
@@ -36,6 +38,14 @@ def forecast(scenario='Medium', multiplier=1.0, week_type='event'):
                          passengers=round(arrivals*4.5,2), fuel_requests=round(arrivals*.65,2),
                          provenance='synthetic planning baseline'))
     return rows
+
+
+def uploaded_profile(ordinary_demand, factor=1.0):
+    """Scale supplied aggregate counts; uploaded provenance is not independently verified."""
+    return [dict(hour=row['hour'], day=row['hour']//24+1, clock=row['hour'] % 24,
+                 **{key: round(row[key]*factor, 2) for key in ('aircraft', 'passengers', 'fuel_requests')},
+                 provenance='uploaded ordinary-week counts; any event scaling is a planning assumption')
+            for row in sorted(ordinary_demand, key=lambda item: item['hour'])]
 
 def requirements(rows, config):
     result = []
@@ -106,10 +116,14 @@ def simulate(jobs, staffing, config, include_trace=False):
                 service_level=round(sum(r['service_level']*r['requests'] for r in results)/max(1,total),4),
                 unfinished_at_close=sum(r['unfinished_at_close'] for r in results))
 
-def scenario_summary(multiplier=1.0, config=None, forecast_mode='baseline', proxy_scale=.25):
+def scenario_summary(multiplier=1.0, config=None, forecast_mode='baseline', proxy_scale=.25,
+                     scenario_multipliers=None, ordinary_demand=None):
     """Compact, reproducible comparison of ordinary demand and three event cases."""
     config = config or DEFAULTS
-    ordinary = forecast('Medium', multiplier, 'ordinary')
+    factors = scenario_multipliers or SCENARIO_MULTIPLIERS
+    ordinary = forecast('Medium', multiplier, 'ordinary', factors)
+    if forecast_mode == 'uploaded':
+        ordinary = uploaded_profile(ordinary_demand, multiplier)
     if forecast_mode == 'trained':
         from .training import predict
         values, _ = predict(ordinary)
@@ -125,8 +139,10 @@ def scenario_summary(multiplier=1.0, config=None, forecast_mode='baseline', prox
                        fuel_requests=round(aircraft*.65,2))
     summaries = []
     for scenario in ('Low', 'Medium', 'High'):
-        rows = forecast(scenario, multiplier, 'event')
-        factor = {'Low': 1.15, 'Medium': 1.4, 'High': 1.7}[scenario] * multiplier
+        rows = forecast(scenario, multiplier, 'event', factors)
+        factor = factors[scenario] * multiplier
+        if forecast_mode == 'uploaded':
+            rows = uploaded_profile(ordinary_demand, factor)
         if forecast_mode == 'trained':
             values, _ = predict(rows)
             for row, prediction in zip(rows, values):
@@ -145,7 +161,7 @@ def scenario_summary(multiplier=1.0, config=None, forecast_mode='baseline', prox
             peak_aircraft_per_hour=round(max(r['aircraft'] for r in rows), 1),
             peak_seats={name: max(x['required'] for x in needs if x['department'] == name)
                         for name in config},
-            event_multiplier={'Low': 1.15, 'Medium': 1.4, 'High': 1.7}[scenario],
+            event_multiplier=factors[scenario],
             effective_multiplier=factor,
         ))
     return dict(
@@ -156,14 +172,17 @@ def scenario_summary(multiplier=1.0, config=None, forecast_mode='baseline', prox
     )
 
 
-def run(scenario='Medium', multiplier=1., seed=42, config=None, custom=None, forecast_mode='baseline',proxy_scale=.25):
+def run(scenario='Medium', multiplier=1., seed=42, config=None, custom=None, forecast_mode='baseline',proxy_scale=.25, scenario_multipliers=None, ordinary_demand=None, include_queue_options=True):
     config = config or DEFAULTS
-    rows = forecast(scenario, multiplier, 'event')
+    factors = scenario_multipliers or SCENARIO_MULTIPLIERS
+    rows = forecast(scenario, multiplier, 'event', factors)
     training_report = None
+    if forecast_mode == 'uploaded':
+        rows = uploaded_profile(ordinary_demand, factors[scenario]*multiplier)
     if forecast_mode == 'trained':
         from .training import predict
         values, training_report = predict(rows)
-        factor = {'Low':1.15,'Medium':1.4,'High':1.7}[scenario]*multiplier
+        factor = factors[scenario]*multiplier
         for row, prediction in zip(rows,values):
             for key, value in zip(['aircraft','passengers','fuel_requests'],prediction):
                 row[key] = round(float(value)*factor,2)
@@ -171,21 +190,24 @@ def run(scenario='Medium', multiplier=1., seed=42, config=None, custom=None, for
     if forecast_mode == 'real_proxy':
         from .real_training import predict
         values, training_report = predict()
-        factor={'Low':1.15,'Medium':1.4,'High':1.7}[scenario]*multiplier*proxy_scale
+        factor=factors[scenario]*multiplier*proxy_scale
         for row,value in zip(rows,values):
             aircraft=float(value)*factor
             row.update(aircraft=round(aircraft,2),passengers=round(aircraft*4.5,2),
                 fuel_requests=round(aircraft*.65,2),provenance='real JFK departure-pattern model; scaled proxy; passenger/fuel ratios assumed')
     needs = requirements(rows, config)
-    jobs = requests(rows, seed, config)
     options = []
-    for label, quantile in [('Cost-Focused',.5),('Balanced',.85),('Service-Focused',1.)]:
-        staffing = {name: max(dept.minimum, math.ceil(float(np.quantile(
-            [r['required'] for r in needs if r['department']==name],quantile)))) for name,dept in config.items()}
-        options.append(dict(name=label, staffing=staffing, **simulate(jobs,staffing,config)))
-    if custom:
-        options.append(dict(name='Manager Plan', staffing=custom, **simulate(jobs,custom,config)))
+    if include_queue_options:
+        jobs = requests(rows, seed, config)
+        for label, quantile in [('Cost-Focused',.5),('Balanced',.85),('Service-Focused',1.)]:
+            staffing = {name: max(dept.minimum, math.ceil(float(np.quantile(
+                [r['required'] for r in needs if r['department']==name],quantile)))) for name,dept in config.items()}
+            options.append(dict(name=label, staffing=staffing, **simulate(jobs,staffing,config)))
+        if custom:
+            options.append(dict(name='Manager Plan', staffing=custom, **simulate(jobs,custom,config)))
     ordinary_rows = forecast('Medium', multiplier, 'ordinary')
+    if forecast_mode == 'uploaded':
+        ordinary_rows = uploaded_profile(ordinary_demand, multiplier)
     if forecast_mode == 'trained':
         from .training import predict
         ordinary_values, _ = predict(ordinary_rows)
@@ -204,7 +226,7 @@ def run(scenario='Medium', multiplier=1., seed=42, config=None, custom=None, for
     return dict(forecast=rows, ordinary_forecast=ordinary_rows, requirements=needs, options=options, seed=seed,
                 assumptions={name:asdict(dept) for name,dept in config.items()},
                 training_report=training_report, forecast_mode=forecast_mode,
-                provenance=('Real JFK airline departure model; FBO scale and service demand are assumptions' if forecast_mode=='real_proxy' else 'Synthetic history; trained regression demo, not real-world validated' if training_report else 'Synthetic data; transparent planning profile, not trained ML'))
+                provenance=('Uploaded ordinary-week counts; event scaling and workforce are assumptions; no forecast accuracy established' if forecast_mode=='uploaded' else 'Real JFK airline departure model; FBO scale and service demand are assumptions' if forecast_mode=='real_proxy' else 'Synthetic history; trained regression demo, not real-world validated' if training_report else 'Synthetic data; transparent planning profile, not trained ML'))
 
 def generate_data():
     DATA.mkdir(exist_ok=True)

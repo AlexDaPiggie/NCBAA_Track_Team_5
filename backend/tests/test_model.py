@@ -54,3 +54,41 @@ def test_week_end_backlog():
 
 def test_high_demand_increases_requirements():
     assert max(r['required'] for r in requirements(forecast('High'),DEFAULTS)) > max(r['required'] for r in requirements(forecast('Low'),DEFAULTS))
+
+def test_event_factors_are_configurable_and_ordered():
+    factors={'Low':1.05,'Medium':1.3,'High':1.9}
+    low=forecast('Low',scenario_multipliers=factors)
+    high=forecast('High',scenario_multipliers=factors)
+    assert sum(r['aircraft'] for r in high) > sum(r['aircraft'] for r in low)
+
+def test_api_accepts_custom_event_factors_and_wages():
+    response=TestClient(app).post('/api/simulate',json={
+        'scenario':'High',
+        'scenario_multipliers':{'Low':1.05,'Medium':1.3,'High':1.9},
+        'service_wages':{'Passenger Services':30},
+        'staffing_minimums':{'Passenger Services':3},
+        'target_utilization':{'Ramp Operations':.7},
+        'target_wait_minutes':{'Fuel Services':15},
+    })
+    assert response.status_code==200
+    assert response.json()['assumptions']['Passenger Services']['wage']==30
+    assert response.json()['assumptions']['Passenger Services']['minimum']==3
+    assert response.json()['assumptions']['Ramp Operations']['utilization']==.7
+    assert response.json()['assumptions']['Fuel Services']['target_wait']==15
+
+def test_api_rejects_incomplete_scenario_factors():
+    response=TestClient(app).post('/api/simulate',json={
+        'scenario_multipliers':{'Low':1.1},
+    })
+    assert response.status_code==422
+
+def test_scenario_summary_uses_ui_factors_and_staffing_settings():
+    import json
+    response=TestClient(app).get('/api/scenario-summary',params={
+        'scenario_multipliers':json.dumps({'Low':1.1,'Medium':1.5,'High':2.0}),
+        'staffing_minimums':json.dumps({'Ramp Operations':3}),
+        'target_utilization':json.dumps({'Fuel Services':.6}),
+    })
+    assert response.status_code==200
+    summary=response.json()
+    assert [row['event_multiplier'] for row in summary['scenarios']]==[1.1,1.5,2.0]

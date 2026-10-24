@@ -35,3 +35,16 @@ def test_dashboard_summary_endpoint_is_exposed():
     assert 'scenario' in payload
     assert 'options' in payload
     assert len(payload['options']) == 3
+
+
+def test_staffing_pool_size_is_configurable():
+    from fastapi.testclient import TestClient
+    from backend.main import app
+
+    response = TestClient(app).post('/api/staffing-plan', json={
+        'inputs': {'scenario': 'Medium'},
+        'worker_pool_size': 1,
+        'disruption_hours': 1,
+    })
+    assert response.status_code == 200
+    assert response.json()['proposed']['metrics']['unfilled_roster_slots'] > 0

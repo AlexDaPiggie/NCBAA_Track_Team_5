@@ -3,6 +3,8 @@ __pycache__/
 .pytest_cache/
 node_modules/
 frontend/dist/
+frontend/.next/
+frontend/out/
 PROJECT_SPEC.md
 START_CODEX_HERE.md
 *.sqlite

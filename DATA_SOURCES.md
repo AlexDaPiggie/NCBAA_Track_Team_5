@@ -1,6 +1,20 @@
 # Data sources and model results
 
-## What is real?
+## Current command center
+
+The Next.js dashboard uses a fixed-seed TypeScript operations fixture and calculated task assignments. No task metrics or improvements are placeholders. Demand profiles, aircraft, tasks, qualified crews, shift/break windows, service deadlines, and disruptions remain synthetic. Optional uploaded counts drive aircraft activity, but tasks/workforce assumptions are still synthetic. The dashboard is a selected-day task replay, not a trained forecast or full-week employee roster. It makes no accuracy or observed-savings claim.
+
+The Python weekly planner below is retained separately and is not currently the task dashboard's data provider. Its generated holdout metrics must not be presented as validation of the new task fixture.
+
+## Retained weekly planner
+
+The default is a model fitted to generated synthetic history. Optional CSV uploads supply a complete ordinary-week profile with hour, aircraft activity, passenger count, and fuel-service-request counts. Uploaded values are not independently verified, and a single week does not establish forecast accuracy. Event scaling and workforce remain assumptions. The original CSV is not stored; manager decision records retain its counts and source name.
+
+The former JFK proxy remains available through legacy API modes; it is not offered in the new guided interface. Its pipeline and limitations are documented below for reproducibility.
+
+## Optional real-data proxy
+
+The research notes record a separate LAWA reference: Van Nuys Airport recorded 47,501 aircraft operations in Q2 2025, including 39,552 general aviation operations. Source: [LAWA VNY Q2 2025 report](https://www.lawa.org/sites/lawa/files/2025-09/VNY%202q25_%2020250916_Quarterly%20Report2.pdf). These are airport-operation counts, not FBO service requests, employee hours, or inputs to the staffing forecast.
 
 The aircraft-activity model is trained on **observed 2013 JFK airline departures** from nycflights13. This is not FBO arrival data. It provides a reproducible traffic-pattern proxy, not evidence that the application forecasts private aviation accurately.
 
