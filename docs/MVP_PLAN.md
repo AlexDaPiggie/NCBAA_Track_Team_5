@@ -98,3 +98,71 @@ The current `main.py` merge conflict is unresolved, so this stage does not alter
 - Deterministic tests cover key constraints and fair comparison.
 - Synthetic data and unverified assumptions are visibly labeled.
 - Manager approval is required; no automatic dispatch or sensitive passenger information.
+
+## Stage 5 — six-screen workflow integration
+
+### Plan
+
+1. Replace the legacy navigation with the six screen purposes in the supplied Intelligent FBO Staffing Planner brief: Setup, Baseline vs Super Bowl week, Gap heatmap, Recommended plan, Scenario comparison, and Assumptions / uncertainty / safety.
+2. Connect these screens to existing typed inputs and API responses. Reuse the 42 four-hour demand blocks and existing manager-reviewed synthetic roster workflow where those outputs are available.
+3. Keep the UI honest about current API scope: the live demand/staffing model still exposes three departments; synthetic seven-zone/role CSV fixtures are not yet wired into the planner; recommendation actions such as overtime, part-time offers, reassignment, and reserves are not yet produced by the API. Show these as explicit implementation gaps instead of deriving invented recommendations.
+4. Preserve labels for synthetic, JFK proxy, and assumption-based outputs; preserve manager approval and prohibit dispatch or movement authority.
+
+### Task breakdown
+
+- Rework navigation and page descriptions to the required six screens.
+- Add editable setup controls for current supported scenario, dates as display-only planning context, service-time ratios, demand scaling, and roster constraints.
+- Show ordinary/event four-hour profiles and available uncertainty/provenance caveats.
+- Add a 42-block coverage heatmap from the existing block requirements; identify that its three department rows are provisional and not the requested seven-zone matrix.
+- Present the existing baseline/proposed roster comparison and approval workflow as the currently supported preparation-plan review.
+- Expand low/medium/high demand comparison with the API's available metrics and make unavailable staffing action metrics explicit.
+- Create a dedicated assumptions, limitations, privacy, and human-authority screen.
+- Update API/UI types only where needed; retain API compatibility.
+
+### Acceptance
+
+- All six required screen purposes are directly reachable from navigation.
+- All displayed numeric values come from current API responses or user-editable assumptions.
+- The 42 block grid is populated from the backend response, not a fabricated fixture.
+- Synthetic and JFK-proxy provenance and the current three-department limitation remain visible.
+- Approval is still manager initiated and bound to the built plan snapshot.
+- Frontend production build succeeds.
+
+### Status
+
+Implemented in `frontend/src/App.tsx`, `frontend/src/GapHeatmap.tsx`, and `frontend/src/plannerTypes.ts`. Six navigation screens now follow the supplied brief; the heatmap and baseline/event table use live four-hour API fields, and the event roster remains manager-reviewed. Seven-zone/role optimization, actionable reassignment/overtime/part-time/reserve recommendations, and forecast uncertainty intervals remain unavailable and are labeled in the UI. Stage 6 adds a defined subset of calculated impact measures.
+
+## Stage 6 — impact measurement and data readiness
+
+### Plan
+
+1. Compare the ordinary-week roster left unchanged with the event-week roster under the exact same selected event demand, scenario, and disruption inputs.
+2. Return measured coverage, uncovered blocks, severe-gap blocks, modeled labor-cost delta, and an explicitly labeled service-delay proxy derived from the schedules and requirements.
+3. Show these figures in Scenario Comparison and Recommended Plan, including definitions, the synthetic-data label, and unavailable reserve/action metrics.
+4. Validate whether a suitable LAX 2022 arrivals source is present before integrating it. Keep JFK proxy results distinct; no LAX file or verified source is present in this checkout.
+
+### Task breakdown
+
+- Track hourly coverage gaps for both rosters and derive four-hour block impact counts.
+- Compare both rosters under the same selected event demand and disruption.
+- Define delay risk as a scenario indicator: 10 assumed delay minutes per uncovered Ramp Operations seat-hour. This is an unvalidated demo assumption, not an operational prediction.
+- Calculate incremental modeled labor cost and cost per coverage percentage point only when the proposed plan improves coverage.
+- Surface unavailable reserve efficiency and overtime/part-time/reassignment results rather than inventing them.
+- Record missing/unverified LAX data as a dependency; maintain current provenance labels.
+- Add deterministic API tests for same-scenario comparison and impact calculations.
+
+### Acceptance
+
+- Baseline and proposed metrics share event demand, scenario, and disruption inputs.
+- Every displayed impact metric is derived from the API response, with formulas visible in UI/docs.
+- Uncovered block counts distinguish any gap from peak gaps of at least three positions.
+- Cost-per-coverage-point is absent when coverage does not improve; labor estimates remain labeled synthetic.
+- No LAX provenance or real-world performance claim is made without a validated source.
+
+### Data limitation
+
+The data described in the supplied audit is a 2013 JFK airline-departure proxy. The LAX 2022 file and source metadata are not present in this working tree. Stage 6 can complete synthetic impact measurement now; actual LAX data integration remains pending source validation.
+
+### Status
+
+Implemented in `backend/scheduling.py`, `backend/main.py`, `backend/tests/test_main_integration.py`, `frontend/src/App.tsx`, and `frontend/src/plannerTypes.ts`. Staffing-plan responses now include same-scenario baseline/proposed coverage, four-hour gap counts, modeled labor-cost delta, cost per positive coverage point, and an explicitly assumed ramp delay-risk proxy. The decision record stores the impact snapshot. The UI exposes those values and keeps action-hours/reserve-efficiency metrics unavailable. LAX integration remains blocked on receiving and validating the source file. Verification: frontend production build passes; targeted integration tests pass (3); full backend suite reports 26 passed and one desktop test blocked because its local socket bind is not permitted in this environment.

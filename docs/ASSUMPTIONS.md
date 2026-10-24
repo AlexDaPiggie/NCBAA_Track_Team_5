@@ -39,3 +39,13 @@ The reproducible starter CSVs are in `data/processed/`; regenerate them with `py
 ## Unverified with aviation experts
 
 FBO task catalog and task times; role and qualification requirements; local staffing practices; fatigue, break, rest, and overtime rules; event-week traffic magnitude and timing; whether any particular site has relevant historical data. Validate with an FBO manager before operational use. The prototype is not for operational deployment.
+
+## Stage 6 impact metric definitions
+
+- Impact compares the ordinary-demand roster left unchanged (the naive baseline) with the event-demand roster under the same event forecast and configured disruption. Both are synthetic planning estimates.
+- A four-hour block counts as understaffed if any of its hourly samples has a positive uncovered position gap. A severe-gap block has a peak hourly gap of at least three positions.
+- Modeled labor-cost delta is event-roster estimated labor cost minus ordinary-roster estimated labor cost. It is not actual payroll or the cost of real staffing actions.
+- Coverage change is proposed coverage percentage minus baseline coverage percentage. Cost per coverage percentage point is reported only when coverage improves; it is modeled incremental cost divided by the positive coverage change.
+- Delay-risk proxy is 10 assumed minutes for each uncovered Ramp Operations seat-hour. The coefficient is illustrative and unvalidated; this is not an aircraft delay forecast.
+- Overtime, part-time offers, reserve call-ins, and reserve efficiency are not currently produced by the roster API and remain unavailable rather than inferred.
+- No LAX 2022 arrivals file with verifiable source metadata is present in the checkout. Current impact outputs inherit selected synthetic or disclosed JFK-proxy demand provenance.

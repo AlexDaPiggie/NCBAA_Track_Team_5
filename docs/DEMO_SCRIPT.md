@@ -8,19 +8,19 @@
 
 ## 0:25–0:55 — Baseline versus event week
 
-Show the ordinary synthetic week next to the seven-day event cases. Switch among low, medium, and high. Point to the held-out forecast error on the Demand page and say it measures generated data only, not FBO accuracy.
+Open **Baseline vs Event Week**. Show the ordinary profile, selected event case, hourly chart, and 42 four-hour demand blocks. Explain that the default is synthetic; the optional JFK pattern is airline proxy data, not LAX or business-aviation observations.
 
 ## 0:55–1:35 — Proposed coverage
 
-Show hourly workload and required staff seats. Open Shift Planner, keep the visible synthetic shift assumptions, and build baseline and event rosters. Point out that shifts obey the configured weekly cap and rest gap, with staggered breaks. Mention that workforce rules and wages are assumptions, not validated aviation policy.
+Open **Gap Heatmap** and inspect the four-hour grid. State that this integration currently covers three departments; the requested seven-zone role matrix is not connected yet. Then open **Recommended Plan**, keep the synthetic shift assumptions, and build baseline and event rosters. Mention that workforce rules and wages are assumptions, not validated aviation policy.
 
 ## 1:35–2:20 — Disruption stress test
 
-Open Stress Test. Keep two call-outs, a 50% arrival surge, and a 25% service delay. Run the comparison and show uncovered seat-hours for both rosters under the same event demand and disruption. If the 30-worker synthetic pool cannot fill a shift, show the unfilled slots plainly.
+Open **Scenario Comparison** to show low, medium, and high demand. Build the selected roster, then compare coverage, uncovered blocks, severe gaps, modeled labor-cost change, and the illustrative ramp delay-risk proxy against the unchanged ordinary-week schedule under the same event demand and disruption. Action hours and reserve counts are not modeled. The delay-risk proxy is an assumed indicator, not a delay forecast.
 
 ## 2:20–2:45 — Human approval
 
-Show the roster as pending. A manager can approve or reject it with notes. State: “CrewPilot never dispatches staff, authorizes aircraft movement, or handles passenger information.”
+On **Recommended Plan**, show the roster review. A manager can approve or reject it with notes. Open **Assumptions & Safety** and state: “CrewPilot never dispatches staff, authorizes aircraft movement, or handles passenger information.”
 
 ## 2:45–3:00 — Close
 
@@ -31,6 +31,7 @@ Show the roster as pending. A manager can approve or reject it with notes. State
 - Reset to fixed seed before presenting.
 - Verify ordinary/event and low/medium/high labels are visible.
 - Confirm the disruption affects baseline and proposal equally.
+- Point out that the scenario comparison uses the same event demand and disruption for both rosters; explain the delay-risk proxy assumption.
 - Use only metrics produced by the current run.
 - Keep synthetic label and approval-pending state visible.
 - Have a screenshot/recording fallback if the live environment fails.

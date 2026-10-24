@@ -34,6 +34,26 @@ def test_roster_api_preserves_limits_and_reports_costs_from_shifts():
         assert roster['metrics']['surge_percent']==50
     assert data['baseline']['metrics']['disruption_window']==data['proposed']['metrics']['disruption_window']
     assert data['simulation']['ordinary_forecast']
+    impact=data['impact']
+    assert impact['comparison_basis'].startswith('Both rosters evaluated against the same event demand')
+    assert impact['baseline_coverage_percent']==data['baseline']['metrics']['coverage_percent']
+    assert impact['proposed_coverage_percent']==data['proposed']['metrics']['coverage_percent']
+    assert impact['baseline_understaffed_blocks']==data['baseline']['metrics']['understaffed_blocks']
+    assert impact['proposed_severe_gap_blocks']==data['proposed']['metrics']['severe_gap_blocks']
+    assert impact['coverage_change_percentage_points']==round(
+        impact['proposed_coverage_percent']-impact['baseline_coverage_percent'],1)
+    if impact['coverage_change_percentage_points'] > 0:
+        assert impact['cost_per_coverage_point']==round(
+            impact['modeled_labor_cost_delta']/impact['coverage_change_percentage_points'],2)
+    else:
+        assert impact['cost_per_coverage_point'] is None
+    assert impact['modeled_labor_cost_delta']==round(
+        data['proposed']['metrics']['estimated_labor_cost']-data['baseline']['metrics']['estimated_labor_cost'],2)
+    assert impact['baseline_delay_risk_minutes']==round(
+        next(dept['uncovered_seat_hours'] for dept in data['baseline']['metrics']['departments']
+             if dept['department']=='Ramp Operations')*10,1)
+    assert impact['reserve_efficiency'] is None
+    assert impact['unavailable_action_metrics']
 
 def test_roster_review_uses_separate_local_log(tmp_path,monkeypatch):
     import backend.main as api
@@ -44,5 +64,6 @@ def test_roster_review_uses_separate_local_log(tmp_path,monkeypatch):
     data=response.json()
     assert data['approved'] is True and data['proposed']['shifts']
     assert data['assumptions']['shift_hours']==8
+    assert 'impact' in data
     assert (tmp_path/'decisions.sqlite').exists()
     assert client.post('/api/staffing-plan',json={'inputs':{},'shift_hours':7}).status_code==422

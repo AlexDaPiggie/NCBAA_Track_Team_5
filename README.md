@@ -1,11 +1,17 @@
 # Apron · FBO Staffing Lab
 
 Apron is a local demo for planning staff at an FBO. An FBO is a business at an airport that serves private and general aviation aircraft.
+## Latest: six-screen event-week staffing workflow
+
+Navigation follows the supplied planner brief: Setup & Inputs, Baseline vs Event Week, Gap Heatmap, Recommended Plan, Scenario Comparison, and Assumptions & Safety. The baseline/event screen displays the backend's 42 four-hour demand blocks; the heatmap uses the same block staffing requirements.
+
+This remains a partial UI integration. The connected API models three departments, while the brief calls for seven zones and role qualifications. The API does not generate reassignment, overtime, part-time, or reserve recommendations or uncertainty intervals. Stage 6 adds same-scenario synthetic staffing impact metrics; these are not actual FBO performance. The synthetic event roster can be built and submitted for local manager approval.
+
 ## Latest: synthetic event-week planning comparison
 
-The application defaults to a forecast trained and checked on generated synthetic history. The Demand page shows its held-out error beside a simple baseline and labels both as synthetic validation, not real-world accuracy. An optional JFK airline-activity proxy remains available for exploration; it is not Los Angeles, private aviation, or FBO traffic.
+The application defaults to the synthetic planning model. A synthetic-trained model and an optional JFK airline-activity proxy remain available; the proxy is not Los Angeles, private aviation, or FBO traffic. The Assumptions & Safety screen describes the source and validation limits.
 
-Demand shows ordinary-week and event-week profiles, with an expandable low/medium/high comparison. Staffing shows current coverage, peak needs and additional peak positions by department. Plan options also report same-demand costs and service outcomes. The assumption panel explains that scenarios are planning cases, not confidence intervals. Manager approval remains required.
+Baseline vs Event Week shows ordinary and event demand; Scenario Comparison shows low/medium/high aircraft totals and peak staff requirements. These scenarios are planning cases, not confidence intervals. Manager approval remains required for the synthetic event roster.
 
 Synthetic data and task requests are generated deterministically from a fixed seed. JFK proxy settings remain optional. The sections below explain setup and shared simulation assumptions.
 
@@ -14,19 +20,20 @@ The app estimates hourly work, compares staffing plans, and simulates waiting re
 
 ## How to use the website
 
-1. Choose Quiet, Normal or Busy demand and click **Run Simulation**. Source, scaling and seed are under **Settings**.
-2. **Live Floor** shows staff positions, the waiting queue and average wait. Switch departments or try staff + / - and rerun.
-3. **Demand** compares ordinary and event weeks. Use day and volume filters; expand the scenario comparison for all three event levels.
-4. **Staffing** shows each department's current positions, peak requirement and extra positions needed. Edit counts or expand service-time settings.
-5. **Compare Plans** shows cost and waiting-time trade-offs from the queue engine. Department detail and model explanations are expandable.
-6. **Shifts & Stress** combines the incoming shift planner and disruption test. Set call-outs, extra arrivals and service delays; expand shift/rest/break rules if needed. Click **Build & Test Roster**. Compare ordinary/event roster coverage and costs, then expand the day-filtered shifts or department gaps.
-7. **Review & Approve** supports either coverage-plan review (`/api/decisions`) or event-roster review (`/api/staffing-decisions`). Changed settings require rebuilding before roster approval. Decisions and exports remain local; no workers are contacted.
+1. **Setup & Inputs** configures the demand case, source, scale, seed, and current service-time assumptions. Click **Run Plan** to refresh demand outputs.
+2. **Baseline vs Event Week** compares ordinary and event demand and lists all 42 four-hour blocks.
+3. **Gap Heatmap** estimates required positions against the selected department coverage counts. It is not yet a seven-zone schedule coverage view.
+4. **Recommended Plan** builds ordinary and event synthetic rosters under the same selected demand and disruption. Review the roster and submit an approve/reject decision with manager name and notes.
+5. **Scenario Comparison** shows low/medium/high aircraft totals and peak staffing from the API. After building a roster, it also compares coverage, uncovered four-hour blocks, severe-gap blocks, modeled labor-cost delta, and an illustrative ramp delay-risk proxy against the unchanged ordinary-week roster under the same event inputs. Action hours and reserve efficiency are not available.
+6. **Assumptions & Safety** explains provenance, privacy, uncertainty limits, and the manager's authority.
+
+Roster decisions are saved locally through `/api/staffing-decisions`; no workers are contacted. Rebuild after changing any input before approving the roster.
 
 The interface is English-only. Source details, assumptions, forecast scores and the optional workflow guide remain available without filling the default screen. The floor still replays the queue simulation using continuous staff positions. Shift-stress metrics are a separate capacity calculation, not a replay of waits under shift breaks. Worker availability is assumed and IDs are fictional.
 
 The first shift schedule is separate from the seat-based simulation and supports the **Medium** scenario. The roster in [backend/synthetic_roster.py](backend/synthetic_roster.py) is entirely synthetic. It contains stable example IDs, department qualifications, day and shift availability, and weekly hour caps. It uses 6am–2pm, 2pm–10pm, and 10pm–6am shifts, each 8 hours long, and requires 10 hours of rest. For each department and block, shift demand is the maximum hourly integer seat requirement in that block. A deterministic greedy assignment favors workers with fewer assigned hours, then stable worker IDs. Any uncovered slot is shown as **outside staff needed**; this is an estimate, not a confirmed hire or a real-world staffing recommendation.
 
-On **Compare Plans**, cost, wait, and unfinished work still come from the existing continuous seat simulation, which assumes all selected seats are staffed. Schedule coverage is a separate roster feasibility estimate and does not alter those simulation results. The prototype does not model breaks, preferences, location, labor rules, or validate the roster against real staffing conditions.
+Queue cost, wait, and unfinished-work outputs remain available from the API's continuous seat simulation, which assumes selected positions are staffed. Schedule coverage is a separate roster feasibility estimate and does not alter those simulation results. The prototype does not validate the roster against real staffing conditions.
 
 Departments in this demo: Passenger Services, Ramp Operations, and Fuel Services. This is a **staffing** project. “Fuel Services” means planning staff for fuel requests. It does not plan how much fuel to load.
 
@@ -102,12 +109,14 @@ Check http://127.0.0.1:8000/docs. If the API page does not open, the backend is 
 - `POST /api/simulate` — runs the selected demand case and returns the hourly forecast, ordinary-week comparison profile, staffing requirements, plan metrics, provenance, and synthetic holdout report when the trained model is selected.
 - `GET /api/scenario-summary` — accepts `multiplier`, `forecast_mode`, `proxy_scale`, and JSON `service_minutes` query parameters; returns ordinary-week totals plus low/medium/high event-week totals, peak activity, and peak concurrent seats by department.
 - `POST /api/replay` — returns the seeded request trace for a selected staffing option.
-- `POST /api/staffing-plan` — accepts the simulation inputs plus shift length, break minutes, weekly hour cap, rest gap, and disruption settings; builds baseline/event rosters and evaluates both under the same call-outs, arrival surge, and service delay.
+- `POST /api/staffing-plan` — accepts the simulation inputs plus shift length, break minutes, weekly hour cap, rest gap, and disruption settings; builds baseline/event rosters and evaluates both under the same call-outs, arrival surge, and service delay. Returns four-hour understaffed/severe-gap counts and an `impact` object with same-scenario coverage, modeled cost, and delay-risk comparisons. The delay-risk proxy uses an assumed 10 minutes per uncovered Ramp Operations seat-hour and is not an aircraft delay forecast.
 - `POST /api/schedule` — returns the legacy deterministic synthetic shift assignment for the Medium demand scenario.
 - `POST /api/staffing-decisions` — recomputes and saves manager approval or rejection for a staffing roster.
 - `POST /api/decisions` — stores a manager's approve/reject decision locally for a simulation snapshot.
 
 Interactive request and response schemas are available at `http://127.0.0.1:8000/docs` while the backend is running.
+
+Stage 6 impact inherits the selected data provenance. The repository has no verified LAX 2022 arrivals file, so results remain synthetic or clearly disclosed JFK airline-pattern proxy estimates; they are not validated LAX forecasts. See [Stage 6 metric definitions](docs/ASSUMPTIONS.md#stage-6-impact-metric-definitions).
 
 ## Useful commands
 

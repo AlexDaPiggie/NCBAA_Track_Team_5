@@ -1,6 +1,7 @@
 """Deterministic synthetic shift roster and disruption capacity evaluation."""
 import math
 import random
+from collections import defaultdict
 
 from .model import DEFAULTS
 
@@ -75,6 +76,7 @@ def _evaluate(roster, workers_by_department, event_rows, requirements, config,
                                 and shift['week_end_hour'] > affected_start})
     global_absent_ids = set(rng.sample(affected_workers, min(absences, len(affected_workers))))
     results = []
+    all_gap_by_hour = defaultdict(float)
     for department, rules in config.items():
         worker_ids = sorted({shift['employee_id'] for shift in roster
                              if shift['department'] == department
@@ -104,6 +106,7 @@ def _evaluate(roster, workers_by_department, event_rows, requirements, config,
             absent = sum(shift['employee_id'] in absent_ids for shift in scheduled) if in_disruption else 0
             capacity = max(0.0, len(scheduled)-break_loss-absent)
             gap = max(0.0, required-capacity)
+            all_gap_by_hour[hour] += gap
             uncovered_seat_hours += gap
             covered_seat_hours += min(required, capacity)
             max_gap = max(max_gap, math.ceil(gap))
@@ -119,6 +122,11 @@ def _evaluate(roster, workers_by_department, event_rows, requirements, config,
                             uncovered_seat_hours=round(uncovered_seat_hours, 1),
                             peak_uncovered_seats=max_gap, absent_workers=len(absent_ids),
                             overtime_hours=round(overtime, 1), disrupted_hours=disrupted_hours))
+    block_gaps = {}
+    for hour, gap in all_gap_by_hour.items():
+        block_gaps.setdefault(hour // 4, []).append(gap)
+    understaffed_blocks = sum(any(gap > 0 for gap in gaps) for gaps in block_gaps.values())
+    severe_gap_blocks = sum(max(gaps, default=0) >= 3 for gaps in block_gaps.values())
     total_demand = sum(item['demand_seat_hours'] for item in results)
     total_uncovered = sum(item['uncovered_seat_hours'] for item in results)
     total_covered = sum(item['covered_seat_hours'] for item in results)
@@ -132,6 +140,8 @@ def _evaluate(roster, workers_by_department, event_rows, requirements, config,
                 uncovered_seat_hours=round(total_uncovered, 1),
                 coverage_percent=round(100*total_covered/max(1,total_demand), 1),
                 overtime_hours=round(sum(item['overtime_hours'] for item in results), 1),
+                understaffed_blocks=understaffed_blocks,
+                severe_gap_blocks=severe_gap_blocks,
                 unfilled_roster_slots=sum(item['unfilled_roster_slots'] for item in results),
                 absences=absences, surge_percent=surge_percent,
                 service_delay_percent=service_delay_percent,
@@ -178,8 +188,34 @@ def compare_staffing_plans(event_rows, ordinary_rows, event_requirements,
                                 unfilled_by_department=baseline_unfilled, **kwargs)
     proposed_result = _evaluate(proposed, proposed_workers, event_rows, event_requirements, config,
                                 unfilled_by_department=proposed_unfilled, **kwargs)
+    coverage_change = round(proposed_result['coverage_percent'] - baseline_result['coverage_percent'], 1)
+    cost_delta = round(proposed_result['estimated_labor_cost'] - baseline_result['estimated_labor_cost'], 2)
+    ramp_baseline = next((item for item in baseline_result['departments']
+                          if item['department'] == 'Ramp Operations'), None)
+    ramp_proposed = next((item for item in proposed_result['departments']
+                          if item['department'] == 'Ramp Operations'), None)
+    impact = dict(
+        comparison_basis='Both rosters evaluated against the same event demand and disruption.',
+        baseline_coverage_percent=baseline_result['coverage_percent'],
+        proposed_coverage_percent=proposed_result['coverage_percent'],
+        coverage_change_percentage_points=coverage_change,
+        baseline_understaffed_blocks=baseline_result['understaffed_blocks'],
+        proposed_understaffed_blocks=proposed_result['understaffed_blocks'],
+        baseline_severe_gap_blocks=baseline_result['severe_gap_blocks'],
+        proposed_severe_gap_blocks=proposed_result['severe_gap_blocks'],
+        modeled_labor_cost_delta=cost_delta,
+        cost_per_coverage_point=(round(cost_delta / coverage_change, 2)
+                                 if coverage_change > 0 else None),
+        delay_risk_minutes_per_uncovered_ramp_seat_hour=10,
+        baseline_delay_risk_minutes=round((ramp_baseline or {}).get('uncovered_seat_hours', 0) * 10, 1),
+        proposed_delay_risk_minutes=round((ramp_proposed or {}).get('uncovered_seat_hours', 0) * 10, 1),
+        delay_risk_definition='Illustrative proxy: 10 assumed minutes per uncovered Ramp Operations seat-hour; not an aircraft delay forecast.',
+        reserve_efficiency=None,
+        unavailable_action_metrics=['overtime offers', 'part-time offers', 'reassignments', 'reserve call-ins'],
+    )
     return dict(baseline=dict(metrics=baseline_result, shifts=baseline),
                 proposed=dict(metrics=proposed_result, shifts=proposed),
+                impact=impact,
                 assumptions=dict(shift_hours=shift_hours, break_minutes=break_minutes,
                                  max_weekly_hours=max_weekly_hours,
                                  minimum_rest_hours=minimum_rest_hours,

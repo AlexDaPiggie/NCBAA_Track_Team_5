@@ -113,7 +113,7 @@ def decide_staffing_plan(body: StaffingDecisionInput):
                   timestamp=datetime.now(timezone.utc).isoformat(),
                   inputs=body.inputs.model_dump(),
                   assumptions=plan['assumptions'], baseline=plan['baseline'],
-                  proposed=plan['proposed'], provenance=plan['provenance'],
+                  proposed=plan['proposed'], impact=plan['impact'], provenance=plan['provenance'],
                   scope='Local planning record only; no worker dispatch or operational changes')
     with sqlite3.connect(DATA/'decisions.sqlite') as db:
         db.execute('CREATE TABLE IF NOT EXISTS staffing_decisions (id INTEGER PRIMARY KEY, record TEXT NOT NULL)')
