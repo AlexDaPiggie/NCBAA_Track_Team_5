@@ -1,0 +1,12 @@
+zone,role,workload_driver,capacity_per_staff_per_block,min_staff_peak_blocks_1_to_4,min_staff_offpeak_blocks_0_and_5,required_staff_formula
+Ramp,line_service_tech,movements x workload_multiplier,4,2,1,"max(minimum, ceil(workload / capacity))"
+Ramp,ramp_supervisor,movements,12,1,0,"max(minimum, ceil(workload / capacity))"
+Fuel,fueler,fuel_requests,5,0,0,"max(minimum, ceil(workload / capacity))"
+Fuel,fuel_safety_lead,fuel_requests,15,0,0,"max(minimum, ceil(workload / capacity))"
+Customer service,customer_service_rep,movements,6,1,0,"max(minimum, ceil(workload / capacity))"
+Customer service,concierge,ground_transport_requests,8,0,0,"max(minimum, ceil(workload / capacity))"
+Operations,duty_manager,movements,30,1,0,"max(minimum, ceil(workload / capacity))"
+Operations,dispatcher,movements,20,0,0,"max(minimum, ceil(workload / capacity))"
+Access control,access_control_agent,movements,10,1,0,"max(minimum, ceil(workload / capacity))"
+Customs support,international_arrivals_coordinator,international_movements,3,0,0,"max(minimum, ceil(workload / capacity))"
+Hangar,hangar_tow_operator,hangar_tows,5,0,0,"max(minimum, ceil(workload / capacity))"

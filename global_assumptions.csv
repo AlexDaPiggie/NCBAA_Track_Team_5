@@ -1,0 +1,10 @@
+category,parameter,value,unit,note
+constraint,max_consecutive_hours,12,hours,Hard limit on one continuous stretch of work
+constraint,min_rest_between_shifts,8,hours,Hard limit
+constraint,max_weekly_hours,60,hours,Hard cap including overtime
+constraint,meal_break_required_after,6,hours,Break must fit inside the shift
+constraint,overtime_multiplier,1.5,x regular rate,Applied above 40 h/week here; check daily-overtime rules before costing
+workload,fuel_requests_per_departure,0.85,requests,Share of departures that buy fuel at this FBO
+workload,ground_transport_requests_per_arrival,0.8,requests,Arrivals needing a car or crew transport
+workload,hangar_tows_per_movement,0.15,tows,Aircraft towed into or out of the hangar
+workload,departures_per_arrival,1.0,ratio,"Over a full window, departures balance arrivals; timing is offset by ground time"

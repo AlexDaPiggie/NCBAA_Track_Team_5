@@ -1,0 +1,485 @@
+worker_id,day_index,day_name,block,zone,role,scheduled_hours
+W-001,0,Mon,3,Customs support,international_arrivals_coordinator,4
+W-001,0,Mon,4,Customs support,international_arrivals_coordinator,4
+W-001,3,Thu,3,Customs support,international_arrivals_coordinator,4
+W-001,3,Thu,4,Customs support,international_arrivals_coordinator,4
+W-001,4,Fri,3,Customs support,international_arrivals_coordinator,4
+W-001,4,Fri,4,Customs support,international_arrivals_coordinator,4
+W-001,5,Sat,3,Customs support,international_arrivals_coordinator,4
+W-001,5,Sat,4,Customs support,international_arrivals_coordinator,4
+W-001,6,Sun,3,Customs support,international_arrivals_coordinator,4
+W-001,6,Sun,4,Customs support,international_arrivals_coordinator,4
+W-002,0,Mon,2,Fuel,fueler,4
+W-002,1,Tue,2,Fuel,fueler,4
+W-002,2,Wed,2,Fuel,fueler,4
+W-002,3,Thu,2,Fuel,fueler,4
+W-003,2,Wed,3,Fuel,fueler,4
+W-003,2,Wed,4,Fuel,fueler,4
+W-003,3,Thu,3,Fuel,fueler,4
+W-003,3,Thu,4,Fuel,fueler,4
+W-003,4,Fri,3,Fuel,fueler,4
+W-003,4,Fri,4,Fuel,fueler,4
+W-003,5,Sat,3,Fuel,fueler,4
+W-003,5,Sat,4,Fuel,fueler,4
+W-003,6,Sun,3,Fuel,fueler,4
+W-003,6,Sun,4,Fuel,fueler,4
+W-004,0,Mon,3,Customer service,concierge,4
+W-004,0,Mon,4,Customer service,concierge,4
+W-004,1,Tue,3,Customer service,concierge,4
+W-004,1,Tue,4,Customer service,concierge,4
+W-004,4,Fri,3,Customer service,concierge,4
+W-004,4,Fri,4,Customer service,concierge,4
+W-004,5,Sat,3,Customer service,concierge,4
+W-004,5,Sat,4,Customer service,concierge,4
+W-004,6,Sun,3,Customer service,concierge,4
+W-004,6,Sun,4,Customer service,concierge,4
+W-005,0,Mon,1,Operations,dispatcher,4
+W-005,0,Mon,2,Operations,dispatcher,4
+W-005,1,Tue,1,Operations,dispatcher,4
+W-005,1,Tue,2,Operations,dispatcher,4
+W-005,4,Fri,1,Operations,dispatcher,4
+W-005,4,Fri,2,Operations,dispatcher,4
+W-005,5,Sat,1,Operations,dispatcher,4
+W-005,5,Sat,2,Operations,dispatcher,4
+W-005,6,Sun,1,Operations,dispatcher,4
+W-005,6,Sun,2,Operations,dispatcher,4
+W-006,2,Wed,2,Fuel,fueler,4
+W-006,2,Wed,3,Fuel,fueler,4
+W-006,3,Thu,2,Fuel,fueler,4
+W-006,3,Thu,3,Fuel,fueler,4
+W-006,4,Fri,2,Fuel,fueler,4
+W-006,4,Fri,3,Fuel,fueler,4
+W-006,5,Sat,2,Fuel,fueler,4
+W-006,5,Sat,3,Fuel,fueler,4
+W-006,6,Sun,2,Fuel,fueler,4
+W-006,6,Sun,3,Fuel,fueler,4
+W-007,0,Mon,0,Ramp,line_service_tech,4
+W-007,0,Mon,1,Ramp,line_service_tech,4
+W-007,1,Tue,0,Ramp,line_service_tech,4
+W-007,1,Tue,1,Ramp,line_service_tech,4
+W-007,2,Wed,0,Ramp,line_service_tech,4
+W-007,2,Wed,1,Ramp,line_service_tech,4
+W-007,5,Sat,0,Ramp,line_service_tech,4
+W-007,5,Sat,1,Ramp,line_service_tech,4
+W-007,6,Sun,0,Ramp,line_service_tech,4
+W-007,6,Sun,1,Ramp,line_service_tech,4
+W-008,0,Mon,1,Ramp,line_service_tech,4
+W-008,0,Mon,2,Ramp,line_service_tech,4
+W-008,3,Thu,1,Ramp,line_service_tech,4
+W-008,3,Thu,2,Ramp,line_service_tech,4
+W-008,4,Fri,1,Ramp,line_service_tech,4
+W-008,4,Fri,2,Ramp,line_service_tech,4
+W-008,5,Sat,1,Ramp,line_service_tech,4
+W-008,5,Sat,2,Ramp,line_service_tech,4
+W-008,6,Sun,1,Ramp,line_service_tech,4
+W-008,6,Sun,2,Ramp,line_service_tech,4
+W-009,4,Fri,5,Ramp,line_service_tech,4
+W-009,5,Sat,5,Ramp,line_service_tech,4
+W-009,6,Sun,5,Ramp,line_service_tech,4
+W-009,0,Mon,5,Ramp,line_service_tech,4
+W-010,0,Mon,3,Hangar,hangar_tow_operator,4
+W-010,0,Mon,4,Hangar,hangar_tow_operator,4
+W-010,1,Tue,3,Hangar,hangar_tow_operator,4
+W-010,1,Tue,4,Hangar,hangar_tow_operator,4
+W-010,2,Wed,3,Hangar,hangar_tow_operator,4
+W-010,2,Wed,4,Hangar,hangar_tow_operator,4
+W-010,3,Thu,3,Hangar,hangar_tow_operator,4
+W-010,3,Thu,4,Hangar,hangar_tow_operator,4
+W-010,4,Fri,3,Hangar,hangar_tow_operator,4
+W-010,4,Fri,4,Hangar,hangar_tow_operator,4
+W-011,6,Sun,3,Customer service,customer_service_rep,4
+W-011,0,Mon,3,Customer service,customer_service_rep,4
+W-011,1,Tue,3,Customer service,customer_service_rep,4
+W-011,2,Wed,3,Customer service,customer_service_rep,4
+W-011,3,Thu,3,Customer service,customer_service_rep,4
+W-011,4,Fri,3,Customer service,customer_service_rep,4
+W-012,2,Wed,3,Access control,access_control_agent,4
+W-012,2,Wed,4,Access control,access_control_agent,4
+W-012,3,Thu,3,Access control,access_control_agent,4
+W-012,3,Thu,4,Access control,access_control_agent,4
+W-012,4,Fri,3,Access control,access_control_agent,4
+W-012,4,Fri,4,Access control,access_control_agent,4
+W-012,5,Sat,3,Access control,access_control_agent,4
+W-012,5,Sat,4,Access control,access_control_agent,4
+W-012,6,Sun,3,Access control,access_control_agent,4
+W-012,6,Sun,4,Access control,access_control_agent,4
+W-013,2,Wed,2,Hangar,hangar_tow_operator,4
+W-013,2,Wed,3,Hangar,hangar_tow_operator,4
+W-013,3,Thu,2,Hangar,hangar_tow_operator,4
+W-013,3,Thu,3,Hangar,hangar_tow_operator,4
+W-013,4,Fri,2,Hangar,hangar_tow_operator,4
+W-013,4,Fri,3,Hangar,hangar_tow_operator,4
+W-013,5,Sat,2,Hangar,hangar_tow_operator,4
+W-013,5,Sat,3,Hangar,hangar_tow_operator,4
+W-013,6,Sun,2,Hangar,hangar_tow_operator,4
+W-013,6,Sun,3,Hangar,hangar_tow_operator,4
+W-014,0,Mon,3,Ramp,line_service_tech,4
+W-014,0,Mon,4,Ramp,line_service_tech,4
+W-014,3,Thu,3,Ramp,line_service_tech,4
+W-014,3,Thu,4,Ramp,line_service_tech,4
+W-014,4,Fri,3,Ramp,line_service_tech,4
+W-014,4,Fri,4,Ramp,line_service_tech,4
+W-014,5,Sat,3,Ramp,line_service_tech,4
+W-014,5,Sat,4,Ramp,line_service_tech,4
+W-014,6,Sun,3,Ramp,line_service_tech,4
+W-014,6,Sun,4,Ramp,line_service_tech,4
+W-015,0,Mon,1,Access control,access_control_agent,4
+W-015,0,Mon,2,Access control,access_control_agent,4
+W-015,1,Tue,1,Access control,access_control_agent,4
+W-015,1,Tue,2,Access control,access_control_agent,4
+W-015,2,Wed,1,Access control,access_control_agent,4
+W-015,2,Wed,2,Access control,access_control_agent,4
+W-015,5,Sat,1,Access control,access_control_agent,4
+W-015,5,Sat,2,Access control,access_control_agent,4
+W-015,6,Sun,1,Access control,access_control_agent,4
+W-015,6,Sun,2,Access control,access_control_agent,4
+W-016,1,Tue,1,Customer service,customer_service_rep,4
+W-016,1,Tue,2,Customer service,customer_service_rep,4
+W-016,2,Wed,1,Customer service,customer_service_rep,4
+W-016,2,Wed,2,Customer service,customer_service_rep,4
+W-016,3,Thu,1,Customer service,customer_service_rep,4
+W-016,3,Thu,2,Customer service,customer_service_rep,4
+W-016,4,Fri,1,Customer service,customer_service_rep,4
+W-016,4,Fri,2,Customer service,customer_service_rep,4
+W-016,5,Sat,1,Customer service,customer_service_rep,4
+W-016,5,Sat,2,Customer service,customer_service_rep,4
+W-017,0,Mon,3,Operations,dispatcher,4
+W-017,0,Mon,4,Operations,dispatcher,4
+W-017,3,Thu,3,Operations,dispatcher,4
+W-017,3,Thu,4,Operations,dispatcher,4
+W-017,4,Fri,3,Operations,dispatcher,4
+W-017,4,Fri,4,Operations,dispatcher,4
+W-017,5,Sat,3,Operations,dispatcher,4
+W-017,5,Sat,4,Operations,dispatcher,4
+W-017,6,Sun,3,Operations,dispatcher,4
+W-017,6,Sun,4,Operations,dispatcher,4
+W-018,0,Mon,2,Ramp,ramp_supervisor,4
+W-018,0,Mon,3,Ramp,ramp_supervisor,4
+W-018,1,Tue,2,Ramp,ramp_supervisor,4
+W-018,1,Tue,3,Ramp,ramp_supervisor,4
+W-018,2,Wed,2,Ramp,ramp_supervisor,4
+W-018,2,Wed,3,Ramp,ramp_supervisor,4
+W-018,5,Sat,2,Ramp,ramp_supervisor,4
+W-018,5,Sat,3,Ramp,ramp_supervisor,4
+W-018,6,Sun,2,Ramp,ramp_supervisor,4
+W-018,6,Sun,3,Ramp,ramp_supervisor,4
+W-019,0,Mon,2,Ramp,line_service_tech,4
+W-019,0,Mon,3,Ramp,line_service_tech,4
+W-019,1,Tue,2,Ramp,line_service_tech,4
+W-019,1,Tue,3,Ramp,line_service_tech,4
+W-019,2,Wed,2,Ramp,line_service_tech,4
+W-019,2,Wed,3,Ramp,line_service_tech,4
+W-019,5,Sat,2,Ramp,line_service_tech,4
+W-019,5,Sat,3,Ramp,line_service_tech,4
+W-019,6,Sun,2,Ramp,line_service_tech,4
+W-019,6,Sun,3,Ramp,line_service_tech,4
+W-020,0,Mon,4,Operations,dispatcher,4
+W-020,1,Tue,4,Operations,dispatcher,4
+W-020,2,Wed,4,Operations,dispatcher,4
+W-020,3,Thu,4,Operations,dispatcher,4
+W-021,0,Mon,2,Hangar,hangar_tow_operator,4
+W-021,0,Mon,3,Hangar,hangar_tow_operator,4
+W-021,1,Tue,2,Hangar,hangar_tow_operator,4
+W-021,1,Tue,3,Hangar,hangar_tow_operator,4
+W-021,2,Wed,2,Hangar,hangar_tow_operator,4
+W-021,2,Wed,3,Hangar,hangar_tow_operator,4
+W-021,3,Thu,2,Hangar,hangar_tow_operator,4
+W-021,3,Thu,3,Hangar,hangar_tow_operator,4
+W-021,6,Sun,2,Hangar,hangar_tow_operator,4
+W-021,6,Sun,3,Hangar,hangar_tow_operator,4
+W-022,0,Mon,3,Ramp,line_service_tech,4
+W-022,0,Mon,4,Ramp,line_service_tech,4
+W-022,1,Tue,3,Ramp,line_service_tech,4
+W-022,1,Tue,4,Ramp,line_service_tech,4
+W-022,4,Fri,3,Ramp,line_service_tech,4
+W-022,4,Fri,4,Ramp,line_service_tech,4
+W-022,5,Sat,3,Ramp,line_service_tech,4
+W-022,5,Sat,4,Ramp,line_service_tech,4
+W-022,6,Sun,3,Ramp,line_service_tech,4
+W-022,6,Sun,4,Ramp,line_service_tech,4
+W-023,1,Tue,3,Fuel,fueler,4
+W-023,2,Wed,3,Fuel,fueler,4
+W-023,3,Thu,3,Fuel,fueler,4
+W-023,4,Fri,3,Fuel,fueler,4
+W-023,5,Sat,3,Fuel,fueler,4
+W-024,1,Tue,3,Customs support,international_arrivals_coordinator,4
+W-024,1,Tue,4,Customs support,international_arrivals_coordinator,4
+W-024,2,Wed,3,Customs support,international_arrivals_coordinator,4
+W-024,2,Wed,4,Customs support,international_arrivals_coordinator,4
+W-024,3,Thu,3,Customs support,international_arrivals_coordinator,4
+W-024,3,Thu,4,Customs support,international_arrivals_coordinator,4
+W-024,4,Fri,3,Customs support,international_arrivals_coordinator,4
+W-024,4,Fri,4,Customs support,international_arrivals_coordinator,4
+W-024,5,Sat,3,Customs support,international_arrivals_coordinator,4
+W-024,5,Sat,4,Customs support,international_arrivals_coordinator,4
+W-025,0,Mon,3,Hangar,hangar_tow_operator,4
+W-025,0,Mon,4,Hangar,hangar_tow_operator,4
+W-025,3,Thu,3,Hangar,hangar_tow_operator,4
+W-025,3,Thu,4,Hangar,hangar_tow_operator,4
+W-025,4,Fri,3,Hangar,hangar_tow_operator,4
+W-025,4,Fri,4,Hangar,hangar_tow_operator,4
+W-025,5,Sat,3,Hangar,hangar_tow_operator,4
+W-025,5,Sat,4,Hangar,hangar_tow_operator,4
+W-025,6,Sun,3,Hangar,hangar_tow_operator,4
+W-025,6,Sun,4,Hangar,hangar_tow_operator,4
+W-026,1,Tue,4,Ramp,line_service_tech,4
+W-026,2,Wed,4,Ramp,line_service_tech,4
+W-026,3,Thu,4,Ramp,line_service_tech,4
+W-026,4,Fri,4,Ramp,line_service_tech,4
+W-026,5,Sat,4,Ramp,line_service_tech,4
+W-026,6,Sun,4,Ramp,line_service_tech,4
+W-027,1,Tue,1,Ramp,line_service_tech,4
+W-027,1,Tue,2,Ramp,line_service_tech,4
+W-027,2,Wed,1,Ramp,line_service_tech,4
+W-027,2,Wed,2,Ramp,line_service_tech,4
+W-027,3,Thu,1,Ramp,line_service_tech,4
+W-027,3,Thu,2,Ramp,line_service_tech,4
+W-027,4,Fri,1,Ramp,line_service_tech,4
+W-027,4,Fri,2,Ramp,line_service_tech,4
+W-027,5,Sat,1,Ramp,line_service_tech,4
+W-027,5,Sat,2,Ramp,line_service_tech,4
+W-028,0,Mon,1,Ramp,ramp_supervisor,4
+W-028,0,Mon,2,Ramp,ramp_supervisor,4
+W-028,3,Thu,1,Ramp,ramp_supervisor,4
+W-028,3,Thu,2,Ramp,ramp_supervisor,4
+W-028,4,Fri,1,Ramp,ramp_supervisor,4
+W-028,4,Fri,2,Ramp,ramp_supervisor,4
+W-028,5,Sat,1,Ramp,ramp_supervisor,4
+W-028,5,Sat,2,Ramp,ramp_supervisor,4
+W-028,6,Sun,1,Ramp,ramp_supervisor,4
+W-028,6,Sun,2,Ramp,ramp_supervisor,4
+W-029,0,Mon,2,Fuel,fuel_safety_lead,4
+W-029,0,Mon,3,Fuel,fuel_safety_lead,4
+W-029,1,Tue,2,Fuel,fuel_safety_lead,4
+W-029,1,Tue,3,Fuel,fuel_safety_lead,4
+W-029,2,Wed,2,Fuel,fuel_safety_lead,4
+W-029,2,Wed,3,Fuel,fuel_safety_lead,4
+W-029,5,Sat,2,Fuel,fuel_safety_lead,4
+W-029,5,Sat,3,Fuel,fuel_safety_lead,4
+W-029,6,Sun,2,Fuel,fuel_safety_lead,4
+W-029,6,Sun,3,Fuel,fuel_safety_lead,4
+W-030,5,Sat,3,Fuel,fueler,4
+W-030,6,Sun,3,Fuel,fueler,4
+W-030,0,Mon,3,Fuel,fueler,4
+W-030,1,Tue,3,Fuel,fueler,4
+W-031,0,Mon,3,Access control,access_control_agent,4
+W-031,0,Mon,4,Access control,access_control_agent,4
+W-031,1,Tue,3,Access control,access_control_agent,4
+W-031,1,Tue,4,Access control,access_control_agent,4
+W-031,2,Wed,3,Access control,access_control_agent,4
+W-031,2,Wed,4,Access control,access_control_agent,4
+W-031,5,Sat,3,Access control,access_control_agent,4
+W-031,5,Sat,4,Access control,access_control_agent,4
+W-031,6,Sun,3,Access control,access_control_agent,4
+W-031,6,Sun,4,Access control,access_control_agent,4
+W-032,0,Mon,2,Operations,duty_manager,4
+W-032,0,Mon,3,Operations,duty_manager,4
+W-032,1,Tue,2,Operations,duty_manager,4
+W-032,1,Tue,3,Operations,duty_manager,4
+W-032,2,Wed,2,Operations,duty_manager,4
+W-032,2,Wed,3,Operations,duty_manager,4
+W-032,3,Thu,2,Operations,duty_manager,4
+W-032,3,Thu,3,Operations,duty_manager,4
+W-032,4,Fri,2,Operations,duty_manager,4
+W-032,4,Fri,3,Operations,duty_manager,4
+W-033,5,Sat,2,Ramp,line_service_tech,4
+W-033,6,Sun,2,Ramp,line_service_tech,4
+W-033,0,Mon,2,Ramp,line_service_tech,4
+W-033,1,Tue,2,Ramp,line_service_tech,4
+W-033,2,Wed,2,Ramp,line_service_tech,4
+W-033,3,Thu,2,Ramp,line_service_tech,4
+W-034,6,Sun,4,Fuel,fueler,4
+W-034,0,Mon,4,Fuel,fueler,4
+W-034,1,Tue,4,Fuel,fueler,4
+W-034,2,Wed,4,Fuel,fueler,4
+W-034,3,Thu,4,Fuel,fueler,4
+W-034,4,Fri,4,Fuel,fueler,4
+W-035,2,Wed,2,Customer service,concierge,4
+W-035,2,Wed,3,Customer service,concierge,4
+W-035,3,Thu,2,Customer service,concierge,4
+W-035,3,Thu,3,Customer service,concierge,4
+W-035,4,Fri,2,Customer service,concierge,4
+W-035,4,Fri,3,Customer service,concierge,4
+W-035,5,Sat,2,Customer service,concierge,4
+W-035,5,Sat,3,Customer service,concierge,4
+W-035,6,Sun,2,Customer service,concierge,4
+W-035,6,Sun,3,Customer service,concierge,4
+W-036,0,Mon,1,Ramp,ramp_supervisor,4
+W-036,0,Mon,2,Ramp,ramp_supervisor,4
+W-036,1,Tue,1,Ramp,ramp_supervisor,4
+W-036,1,Tue,2,Ramp,ramp_supervisor,4
+W-036,2,Wed,1,Ramp,ramp_supervisor,4
+W-036,2,Wed,2,Ramp,ramp_supervisor,4
+W-036,3,Thu,1,Ramp,ramp_supervisor,4
+W-036,3,Thu,2,Ramp,ramp_supervisor,4
+W-036,4,Fri,1,Ramp,ramp_supervisor,4
+W-036,4,Fri,2,Ramp,ramp_supervisor,4
+W-037,1,Tue,2,Operations,dispatcher,4
+W-037,1,Tue,3,Operations,dispatcher,4
+W-037,2,Wed,2,Operations,dispatcher,4
+W-037,2,Wed,3,Operations,dispatcher,4
+W-037,3,Thu,2,Operations,dispatcher,4
+W-037,3,Thu,3,Operations,dispatcher,4
+W-037,4,Fri,2,Operations,dispatcher,4
+W-037,4,Fri,3,Operations,dispatcher,4
+W-037,5,Sat,2,Operations,dispatcher,4
+W-037,5,Sat,3,Operations,dispatcher,4
+W-038,4,Fri,4,Customs support,international_arrivals_coordinator,4
+W-038,5,Sat,4,Customs support,international_arrivals_coordinator,4
+W-038,6,Sun,4,Customs support,international_arrivals_coordinator,4
+W-038,0,Mon,4,Customs support,international_arrivals_coordinator,4
+W-038,1,Tue,4,Customs support,international_arrivals_coordinator,4
+W-038,2,Wed,4,Customs support,international_arrivals_coordinator,4
+W-039,0,Mon,3,Ramp,line_service_tech,4
+W-039,1,Tue,3,Ramp,line_service_tech,4
+W-039,2,Wed,3,Ramp,line_service_tech,4
+W-039,3,Thu,3,Ramp,line_service_tech,4
+W-039,4,Fri,3,Ramp,line_service_tech,4
+W-040,0,Mon,3,Customer service,customer_service_rep,4
+W-040,0,Mon,4,Customer service,customer_service_rep,4
+W-040,1,Tue,3,Customer service,customer_service_rep,4
+W-040,1,Tue,4,Customer service,customer_service_rep,4
+W-040,2,Wed,3,Customer service,customer_service_rep,4
+W-040,2,Wed,4,Customer service,customer_service_rep,4
+W-040,3,Thu,3,Customer service,customer_service_rep,4
+W-040,3,Thu,4,Customer service,customer_service_rep,4
+W-040,6,Sun,3,Customer service,customer_service_rep,4
+W-040,6,Sun,4,Customer service,customer_service_rep,4
+W-041,0,Mon,1,Access control,access_control_agent,4
+W-041,0,Mon,2,Access control,access_control_agent,4
+W-041,1,Tue,1,Access control,access_control_agent,4
+W-041,1,Tue,2,Access control,access_control_agent,4
+W-041,2,Wed,1,Access control,access_control_agent,4
+W-041,2,Wed,2,Access control,access_control_agent,4
+W-041,3,Thu,1,Access control,access_control_agent,4
+W-041,3,Thu,2,Access control,access_control_agent,4
+W-041,4,Fri,1,Access control,access_control_agent,4
+W-041,4,Fri,2,Access control,access_control_agent,4
+W-042,1,Tue,2,Ramp,line_service_tech,4
+W-042,1,Tue,3,Ramp,line_service_tech,4
+W-042,2,Wed,2,Ramp,line_service_tech,4
+W-042,2,Wed,3,Ramp,line_service_tech,4
+W-042,3,Thu,2,Ramp,line_service_tech,4
+W-042,3,Thu,3,Ramp,line_service_tech,4
+W-042,4,Fri,2,Ramp,line_service_tech,4
+W-042,4,Fri,3,Ramp,line_service_tech,4
+W-042,5,Sat,2,Ramp,line_service_tech,4
+W-042,5,Sat,3,Ramp,line_service_tech,4
+W-043,0,Mon,4,Customer service,concierge,4
+W-043,1,Tue,4,Customer service,concierge,4
+W-043,2,Wed,4,Customer service,concierge,4
+W-043,3,Thu,4,Customer service,concierge,4
+W-044,0,Mon,5,Access control,access_control_agent,4
+W-044,1,Tue,5,Access control,access_control_agent,4
+W-044,2,Wed,5,Access control,access_control_agent,4
+W-044,3,Thu,5,Access control,access_control_agent,4
+W-045,0,Mon,1,Customer service,customer_service_rep,4
+W-045,0,Mon,2,Customer service,customer_service_rep,4
+W-045,3,Thu,1,Customer service,customer_service_rep,4
+W-045,3,Thu,2,Customer service,customer_service_rep,4
+W-045,4,Fri,1,Customer service,customer_service_rep,4
+W-045,4,Fri,2,Customer service,customer_service_rep,4
+W-045,5,Sat,1,Customer service,customer_service_rep,4
+W-045,5,Sat,2,Customer service,customer_service_rep,4
+W-045,6,Sun,1,Customer service,customer_service_rep,4
+W-045,6,Sun,2,Customer service,customer_service_rep,4
+W-046,0,Mon,3,Customer service,customer_service_rep,4
+W-046,0,Mon,4,Customer service,customer_service_rep,4
+W-046,3,Thu,3,Customer service,customer_service_rep,4
+W-046,3,Thu,4,Customer service,customer_service_rep,4
+W-046,4,Fri,3,Customer service,customer_service_rep,4
+W-046,4,Fri,4,Customer service,customer_service_rep,4
+W-046,5,Sat,3,Customer service,customer_service_rep,4
+W-046,5,Sat,4,Customer service,customer_service_rep,4
+W-046,6,Sun,3,Customer service,customer_service_rep,4
+W-046,6,Sun,4,Customer service,customer_service_rep,4
+W-047,0,Mon,3,Fuel,fueler,4
+W-047,0,Mon,4,Fuel,fueler,4
+W-047,1,Tue,3,Fuel,fueler,4
+W-047,1,Tue,4,Fuel,fueler,4
+W-047,2,Wed,3,Fuel,fueler,4
+W-047,2,Wed,4,Fuel,fueler,4
+W-047,5,Sat,3,Fuel,fueler,4
+W-047,5,Sat,4,Fuel,fueler,4
+W-047,6,Sun,3,Fuel,fueler,4
+W-047,6,Sun,4,Fuel,fueler,4
+W-048,0,Mon,1,Fuel,fueler,4
+W-048,0,Mon,2,Fuel,fueler,4
+W-048,1,Tue,1,Fuel,fueler,4
+W-048,1,Tue,2,Fuel,fueler,4
+W-048,4,Fri,1,Fuel,fueler,4
+W-048,4,Fri,2,Fuel,fueler,4
+W-048,5,Sat,1,Fuel,fueler,4
+W-048,5,Sat,2,Fuel,fueler,4
+W-048,6,Sun,1,Fuel,fueler,4
+W-048,6,Sun,2,Fuel,fueler,4
+W-049,1,Tue,2,Customer service,customer_service_rep,4
+W-049,1,Tue,3,Customer service,customer_service_rep,4
+W-049,2,Wed,2,Customer service,customer_service_rep,4
+W-049,2,Wed,3,Customer service,customer_service_rep,4
+W-049,3,Thu,2,Customer service,customer_service_rep,4
+W-049,3,Thu,3,Customer service,customer_service_rep,4
+W-049,4,Fri,2,Customer service,customer_service_rep,4
+W-049,4,Fri,3,Customer service,customer_service_rep,4
+W-049,5,Sat,2,Customer service,customer_service_rep,4
+W-049,5,Sat,3,Customer service,customer_service_rep,4
+W-050,1,Tue,3,Ramp,ramp_supervisor,4
+W-050,1,Tue,4,Ramp,ramp_supervisor,4
+W-050,2,Wed,3,Ramp,ramp_supervisor,4
+W-050,2,Wed,4,Ramp,ramp_supervisor,4
+W-050,3,Thu,3,Ramp,ramp_supervisor,4
+W-050,3,Thu,4,Ramp,ramp_supervisor,4
+W-050,4,Fri,3,Ramp,ramp_supervisor,4
+W-050,4,Fri,4,Ramp,ramp_supervisor,4
+W-050,5,Sat,3,Ramp,ramp_supervisor,4
+W-050,5,Sat,4,Ramp,ramp_supervisor,4
+W-051,1,Tue,2,Fuel,fuel_safety_lead,4
+W-051,1,Tue,3,Fuel,fuel_safety_lead,4
+W-051,2,Wed,2,Fuel,fuel_safety_lead,4
+W-051,2,Wed,3,Fuel,fuel_safety_lead,4
+W-051,3,Thu,2,Fuel,fuel_safety_lead,4
+W-051,3,Thu,3,Fuel,fuel_safety_lead,4
+W-051,4,Fri,2,Fuel,fuel_safety_lead,4
+W-051,4,Fri,3,Fuel,fuel_safety_lead,4
+W-051,5,Sat,2,Fuel,fuel_safety_lead,4
+W-051,5,Sat,3,Fuel,fuel_safety_lead,4
+W-052,0,Mon,1,Operations,duty_manager,4
+W-052,0,Mon,2,Operations,duty_manager,4
+W-052,1,Tue,1,Operations,duty_manager,4
+W-052,1,Tue,2,Operations,duty_manager,4
+W-052,4,Fri,1,Operations,duty_manager,4
+W-052,4,Fri,2,Operations,duty_manager,4
+W-052,5,Sat,1,Operations,duty_manager,4
+W-052,5,Sat,2,Operations,duty_manager,4
+W-052,6,Sun,1,Operations,duty_manager,4
+W-052,6,Sun,2,Operations,duty_manager,4
+W-053,2,Wed,3,Operations,duty_manager,4
+W-053,2,Wed,4,Operations,duty_manager,4
+W-053,3,Thu,3,Operations,duty_manager,4
+W-053,3,Thu,4,Operations,duty_manager,4
+W-053,4,Fri,3,Operations,duty_manager,4
+W-053,4,Fri,4,Operations,duty_manager,4
+W-053,5,Sat,3,Operations,duty_manager,4
+W-053,5,Sat,4,Operations,duty_manager,4
+W-053,6,Sun,3,Operations,duty_manager,4
+W-053,6,Sun,4,Operations,duty_manager,4
+W-054,0,Mon,1,Operations,duty_manager,4
+W-054,0,Mon,2,Operations,duty_manager,4
+W-054,1,Tue,1,Operations,duty_manager,4
+W-054,1,Tue,2,Operations,duty_manager,4
+W-054,2,Wed,1,Operations,duty_manager,4
+W-054,2,Wed,2,Operations,duty_manager,4
+W-054,3,Thu,1,Operations,duty_manager,4
+W-054,3,Thu,2,Operations,duty_manager,4
+W-054,4,Fri,1,Operations,duty_manager,4
+W-054,4,Fri,2,Operations,duty_manager,4
+W-055,0,Mon,4,Ramp,line_service_tech,4
+W-055,0,Mon,5,Ramp,line_service_tech,4
+W-055,1,Tue,4,Ramp,line_service_tech,4
+W-055,1,Tue,5,Ramp,line_service_tech,4
+W-055,2,Wed,4,Ramp,line_service_tech,4
+W-055,2,Wed,5,Ramp,line_service_tech,4
+W-055,3,Thu,4,Ramp,line_service_tech,4
+W-055,3,Thu,5,Ramp,line_service_tech,4
+W-055,6,Sun,4,Ramp,line_service_tech,4
+W-055,6,Sun,5,Ramp,line_service_tech,4

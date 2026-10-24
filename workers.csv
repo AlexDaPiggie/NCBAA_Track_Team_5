@@ -1,0 +1,56 @@
+worker_id,primary_role,primary_zone,secondary_roles,secondary_zones,certifications,employment_type,contracted_weekly_hours,scheduled_hours_this_week,shift_pattern,usual_blocks,days_off,game_week_approved_time_off_days,overtime_willing,max_extra_hours_per_week,convert_to_full_time_willing,hours_last_7_days,regular_rate_usd_hr,overtime_rate_usd_hr
+W-001,international_arrivals_coordinator,Customs support,access_control_agent;customer_service_rep,Access control;Customer service,CUSTOMS_ACCESS;RAMP_ACCESS;SECURITY_ESCORT,full-time,40,40,swing,3;4,Tue;Wed,,yes,12,n/a,40,28.75,43.12
+W-002,fueler,Fuel,line_service_tech,Ramp,AIRCRAFT_MARSHALLING;FUELING;RAMP_DRIVING,part-time,16,16,single_block,2,Fri;Sat;Sun,,yes,12,no,16,29.0,43.5
+W-003,fueler,Fuel,line_service_tech,Ramp,AIRCRAFT_MARSHALLING;FUELING;RAMP_DRIVING,full-time,40,40,swing,3;4,Mon;Tue,,limited,4,n/a,40,24.5,36.75
+W-004,concierge,Customer service,customer_service_rep,Customer service,GROUND_TRANSPORT_COORD,full-time,40,40,swing,3;4,Wed;Thu,,limited,8,n/a,40,25.5,38.25
+W-005,dispatcher,Operations,,,,full-time,40,40,early,1;2,Wed;Thu,,yes,12,n/a,40,35.25,52.88
+W-006,fueler,Fuel,line_service_tech,Ramp,AIRCRAFT_MARSHALLING;FUELING;RAMP_DRIVING,full-time,40,40,day,2;3,Mon;Tue,,yes,16,n/a,40,31.75,47.62
+W-007,line_service_tech,Ramp,,,AIRCRAFT_MARSHALLING;RAMP_DRIVING,full-time,40,40,night,0;1,Thu;Fri,,yes,12,n/a,40,29.75,44.62
+W-008,line_service_tech,Ramp,fueler,Fuel,AIRCRAFT_MARSHALLING;FUELING;RAMP_DRIVING,full-time,40,40,early,1;2,Tue;Wed,,yes,16,n/a,40,28.25,42.38
+W-009,line_service_tech,Ramp,fueler,Fuel,AIRCRAFT_MARSHALLING;FUELING;RAMP_DRIVING,part-time,16,16,single_block,5,Tue;Wed;Thu,0,limited,4,no,16,24.25,36.38
+W-010,hangar_tow_operator,Hangar,line_service_tech,Ramp,AIRCRAFT_MARSHALLING;RAMP_DRIVING;TOWING,full-time,40,40,swing,3;4,Sat;Sun,,yes,16,n/a,40,26.75,40.12
+W-011,customer_service_rep,Customer service,dispatcher,Operations,,part-time,24,24,single_block,3,Sat,2,yes,12,no,24,22.5,33.75
+W-012,access_control_agent,Access control,customer_service_rep,Customer service,RAMP_ACCESS;SECURITY_ESCORT,full-time,40,40,swing,3;4,Mon;Tue,,limited,8,n/a,40,27.75,41.62
+W-013,hangar_tow_operator,Hangar,,,RAMP_DRIVING;TOWING,full-time,40,40,day,2;3,Mon;Tue,,yes,16,n/a,40,25.5,38.25
+W-014,line_service_tech,Ramp,fueler;hangar_tow_operator,Fuel;Hangar,AIRCRAFT_MARSHALLING;FUELING;RAMP_DRIVING;TOWING,full-time,40,40,swing,3;4,Tue;Wed,,yes,16,n/a,40,24.75,37.12
+W-015,access_control_agent,Access control,customer_service_rep;international_arrivals_coordinator,Customer service;Customs support,CUSTOMS_ACCESS;RAMP_ACCESS;SECURITY_ESCORT,full-time,40,40,early,1;2,Thu;Fri,,no,0,n/a,40,23.75,35.62
+W-016,customer_service_rep,Customer service,,,,full-time,40,40,early,1;2,Mon;Sun,,yes,16,n/a,40,20.0,30.0
+W-017,dispatcher,Operations,customer_service_rep,Customer service,,full-time,40,40,swing,3;4,Tue;Wed,,limited,4,n/a,44,31.0,46.5
+W-018,ramp_supervisor,Ramp,line_service_tech;fueler,Fuel;Ramp,AIRCRAFT_MARSHALLING;FUELING;RAMP_DRIVING;TOWING,full-time,40,40,day,2;3,Thu;Fri,,limited,4,n/a,40,39.75,59.62
+W-019,line_service_tech,Ramp,fueler;hangar_tow_operator,Fuel;Hangar,AIRCRAFT_MARSHALLING;FUELING;RAMP_DRIVING;TOWING,full-time,40,40,day,2;3,Thu;Fri,,limited,8,n/a,40,27.5,41.25
+W-020,dispatcher,Operations,customer_service_rep,Customer service,,part-time,16,16,single_block,4,Fri;Sat;Sun,,limited,8,no,16,33.5,50.25
+W-021,hangar_tow_operator,Hangar,,,RAMP_DRIVING;TOWING,full-time,40,40,day,2;3,Fri;Sat,,limited,4,n/a,40,26.5,39.75
+W-022,line_service_tech,Ramp,,,AIRCRAFT_MARSHALLING;RAMP_DRIVING,full-time,40,40,swing,3;4,Wed;Thu,,limited,8,n/a,40,25.75,38.62
+W-023,fueler,Fuel,line_service_tech,Ramp,AIRCRAFT_MARSHALLING;FUELING;RAMP_DRIVING,part-time,20,20,single_block,3,Mon;Sun,,limited,4,no,20,29.25,43.88
+W-024,international_arrivals_coordinator,Customs support,access_control_agent;customer_service_rep,Access control;Customer service,CUSTOMS_ACCESS;RAMP_ACCESS;SECURITY_ESCORT,full-time,40,40,swing,3;4,Mon;Sun,,yes,12,n/a,40,33.5,50.25
+W-025,hangar_tow_operator,Hangar,line_service_tech,Ramp,AIRCRAFT_MARSHALLING;RAMP_DRIVING;TOWING,full-time,40,40,swing,3;4,Tue;Wed,,yes,12,n/a,40,31.75,47.62
+W-026,line_service_tech,Ramp,,,AIRCRAFT_MARSHALLING;RAMP_DRIVING,part-time,24,24,single_block,4,Mon,,limited,4,yes,24,27.75,41.62
+W-027,line_service_tech,Ramp,,,AIRCRAFT_MARSHALLING;RAMP_DRIVING,full-time,40,40,early,1;2,Mon;Sun,,limited,4,n/a,40,29.25,43.88
+W-028,ramp_supervisor,Ramp,line_service_tech,Ramp,AIRCRAFT_MARSHALLING;RAMP_DRIVING;TOWING,full-time,40,40,early,1;2,Tue;Wed,,no,0,n/a,40,35.75,53.62
+W-029,fuel_safety_lead,Fuel,,,FUELING;FUEL_SAFETY_LEAD;RAMP_DRIVING,full-time,40,40,day,2;3,Thu;Fri,,limited,4,n/a,40,43.25,64.88
+W-030,fueler,Fuel,,,FUELING;RAMP_DRIVING,part-time,16,16,single_block,3,Wed;Thu;Fri,,limited,8,no,16,31.5,47.25
+W-031,access_control_agent,Access control,customer_service_rep;international_arrivals_coordinator,Customer service;Customs support,CUSTOMS_ACCESS;RAMP_ACCESS;SECURITY_ESCORT,full-time,40,40,swing,3;4,Thu;Fri,,no,0,n/a,40,26.75,40.12
+W-032,duty_manager,Operations,,,DUTY_MANAGER,full-time,40,40,day,2;3,Sat;Sun,,limited,8,n/a,40,51.75,77.62
+W-033,line_service_tech,Ramp,fueler,Fuel,AIRCRAFT_MARSHALLING;FUELING;RAMP_DRIVING,part-time,24,24,single_block,2,Fri,,no,0,no,24,26.0,39.0
+W-034,fueler,Fuel,,,FUELING;RAMP_DRIVING,part-time,24,24,single_block,4,Sat,,yes,16,yes,24,26.5,39.75
+W-035,concierge,Customer service,customer_service_rep,Customer service,GROUND_TRANSPORT_COORD,full-time,40,40,day,2;3,Mon;Tue,,yes,12,n/a,48,26.25,39.38
+W-036,ramp_supervisor,Ramp,,,AIRCRAFT_MARSHALLING;RAMP_DRIVING;TOWING,full-time,40,40,early,1;2,Sat;Sun,,limited,4,n/a,40,35.75,53.62
+W-037,dispatcher,Operations,customer_service_rep,Customer service,,full-time,40,40,day,2;3,Mon;Sun,,limited,4,n/a,40,34.75,52.12
+W-038,international_arrivals_coordinator,Customs support,customer_service_rep;access_control_agent,Access control;Customer service,CUSTOMS_ACCESS;RAMP_ACCESS;SECURITY_ESCORT,part-time,24,24,single_block,4,Thu,,yes,16,no,24,30.5,45.75
+W-039,line_service_tech,Ramp,hangar_tow_operator,Hangar,AIRCRAFT_MARSHALLING;RAMP_DRIVING;TOWING,part-time,20,20,single_block,3,Sat;Sun,,limited,4,no,20,26.0,39.0
+W-040,customer_service_rep,Customer service,dispatcher;concierge,Customer service;Operations,GROUND_TRANSPORT_COORD,full-time,40,40,swing,3;4,Fri;Sat,,yes,16,n/a,40,24.25,36.38
+W-041,access_control_agent,Access control,,,RAMP_ACCESS;SECURITY_ESCORT,full-time,40,40,early,1;2,Sat;Sun,,no,0,n/a,40,26.75,40.12
+W-042,line_service_tech,Ramp,,,AIRCRAFT_MARSHALLING;RAMP_DRIVING,full-time,40,40,day,2;3,Mon;Sun,,limited,4,n/a,40,27.25,40.88
+W-043,concierge,Customer service,,,GROUND_TRANSPORT_COORD,part-time,16,16,single_block,4,Fri;Sat;Sun,,yes,16,no,16,24.0,36.0
+W-044,access_control_agent,Access control,customer_service_rep,Customer service,RAMP_ACCESS;SECURITY_ESCORT,part-time,16,16,single_block,5,Fri;Sat;Sun,,yes,16,yes,24,24.75,37.12
+W-045,customer_service_rep,Customer service,dispatcher,Operations,,full-time,40,40,early,1;2,Tue;Wed,,no,0,n/a,40,22.0,33.0
+W-046,customer_service_rep,Customer service,concierge,Customer service,GROUND_TRANSPORT_COORD,full-time,40,40,swing,3;4,Tue;Wed,3,limited,4,n/a,40,25.75,38.62
+W-047,fueler,Fuel,line_service_tech,Ramp,AIRCRAFT_MARSHALLING;FUELING;RAMP_DRIVING,full-time,40,40,swing,3;4,Thu;Fri,,yes,16,n/a,40,29.25,43.88
+W-048,fueler,Fuel,line_service_tech,Ramp,AIRCRAFT_MARSHALLING;FUELING;RAMP_DRIVING,full-time,40,40,early,1;2,Wed;Thu,,limited,8,n/a,40,25.25,37.88
+W-049,customer_service_rep,Customer service,concierge,Customer service,GROUND_TRANSPORT_COORD,full-time,40,40,day,2;3,Mon;Sun,3,yes,12,n/a,40,25.75,38.62
+W-050,ramp_supervisor,Ramp,,,AIRCRAFT_MARSHALLING;RAMP_DRIVING;TOWING,full-time,40,40,swing,3;4,Mon;Sun,2,limited,8,n/a,40,37.25,55.88
+W-051,fuel_safety_lead,Fuel,fueler,Fuel,FUELING;FUEL_SAFETY_LEAD;RAMP_DRIVING,full-time,40,40,day,2;3,Mon;Sun,,yes,16,n/a,40,42.75,64.12
+W-052,duty_manager,Operations,dispatcher,Operations,DUTY_MANAGER,full-time,40,40,early,1;2,Wed;Thu,,no,0,n/a,40,52.25,78.38
+W-053,duty_manager,Operations,,,DUTY_MANAGER,full-time,40,40,swing,3;4,Mon;Tue,,yes,16,n/a,40,42.25,63.38
+W-054,duty_manager,Operations,,,DUTY_MANAGER,full-time,40,40,early,1;2,Sat;Sun,,limited,8,n/a,40,50.25,75.38
+W-055,line_service_tech,Ramp,hangar_tow_operator,Hangar,AIRCRAFT_MARSHALLING;RAMP_DRIVING;TOWING,full-time,40,40,evening,4;5,Fri;Sat,,limited,8,n/a,40,27.0,40.5
