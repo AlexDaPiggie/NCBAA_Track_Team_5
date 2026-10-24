@@ -44,4 +44,5 @@ def test_replay_metrics_equal_selected_plan():
     replay=response.json()
     balanced=comparison.json()['options'][1]
     assert replay['departments']==balanced['departments']
+    assert replay['shift_staffing']==balanced['shift_staffing']
     assert len(replay['traces']['Passenger Services'])==balanced['departments'][0]['requests']

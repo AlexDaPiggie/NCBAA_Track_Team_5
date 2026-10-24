@@ -17,7 +17,9 @@ Departments in this demo: Passenger Services, Ramp Operations, and Fuel Services
 
 ## Data and limits
 
-All included demand, workers, and service requests are synthetic. The forecast model is trained and checked on synthetic data too. Demo accuracy scores do not show real-world accuracy.
+The default demand, workers, and service requests are synthetic. The forecast model is trained and checked on synthetic data too. An optional historical source uses LAX-bound flight records from February 7–13, 2022; it represents airport-wide commercial flights, not FBO traffic or a live feed. Individual valid arrival times drive ramp jobs. Passenger and fuel demand are estimated with the demo's existing assumptions, not measured in this file. Low/high scenarios scale the historical hourly counts, with extra arrivals in higher scenarios being simulated.
+
+Coverage options use fixed 8-hour shifts (00–08, 08–16, and 16–24), with staffing levels selected separately for each block. Weekly labor cost is scheduled shift hours multiplied by the department wage, assuming all three shifts run every day for seven days. It estimates paid coverage hours, not unique employee headcount, weekly days off, overtime, or benefits.
 
 Service times, wages, staffing minimums, passenger counts, and demand levels are assumptions. They are not verified FBO rules or Super Bowl forecasts. The simulation does not model breaks, fatigue, staff absences, travel between tasks, or aircraft-task safety rules. Ask an FBO expert to review assumptions before treating results as realistic.
 
@@ -92,3 +94,4 @@ python -m backend.training
 - **Scenario:** a low, medium, or high demand level.
 - **Simulation:** a repeatable test of how requests wait for available staff.
 - **Synthetic:** generated example data, not collected from a real FBO.
+- **Historical flight mode:** observed LAX inbound arrivals for February 7–13, 2022, with passenger and fuel demand estimated for demonstration.

@@ -20,7 +20,7 @@ class SimulationInput(BaseModel):
     forecast_mode: str = 'baseline'
 
 def calculate(body):
-    if body.forecast_mode not in ('baseline','trained'):
+    if body.forecast_mode not in ('baseline','trained','historical'):
         raise HTTPException(422,'Unknown forecast mode')
     if body.scenario not in ('Low','Medium','High'):
         raise HTTPException(422,'Unknown scenario')
@@ -35,6 +35,8 @@ def calculate(body):
     try:
         return run(body.scenario,body.multiplier,body.seed,config,body.custom,body.forecast_mode)
     except FileNotFoundError:
+        if body.forecast_mode == 'historical':
+            raise HTTPException(422,'Historical flight data is missing: backend/data/lax_super_bowl_week.csv')
         raise HTTPException(422,'Train the forecast first: python -m backend.training')
 
 @app.post('/api/simulate')
@@ -53,8 +55,10 @@ def replay(body: ReplayInput):
         raise HTTPException(422,'Unknown plan')
     config = {n:Department(**d) for n,d in result['assumptions'].items()}
     from .model import simulate as simulate_engine
-    return dict(option=body.option, staffing=option['staffing'], forecast=result['forecast'],
-        **simulate_engine(requests(result['forecast'],body.inputs.seed,config),option['staffing'],config,include_trace=True))
+    return dict(option=body.option, staffing=option['staffing'],
+        shift_staffing=option['shift_staffing'], forecast=result['forecast'],
+        **simulate_engine(requests(result['forecast'],body.inputs.seed,config),
+                          option['shift_staffing'],config,include_trace=True))
 
 class Decision(BaseModel):
     inputs: SimulationInput
