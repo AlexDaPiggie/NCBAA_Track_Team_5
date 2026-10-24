@@ -47,6 +47,8 @@ More details: [DATA_SOURCES.md](DATA_SOURCES.md).
 
 ## Run locally on Windows
 
+Recovery Planner remembers each scenario during the current page session. Switching Low/Medium/High, mission day, or demand profile restores that scenario's disruption settings, recovery candidate and review. New conditions require a new calculation; applying a changed disruption clears that scenario's candidate and review. Reapplying identical disruption settings preserves them. Refreshing or closing the page clears this in-memory scenario history; downloaded decision records remain separate.
+
 The current CrewPilot website runs its synthetic demo in the browser. **Only the frontend is required.**
 
 From the project folder, run:

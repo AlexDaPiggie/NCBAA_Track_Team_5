@@ -13,6 +13,7 @@ import {Tabs,TabsList,TabsTrigger} from '@/components/ui/tabs';
 import {Slider} from '@/components/ui/slider';
 import {Tooltip,TooltipContent,TooltipTrigger} from '@/components/ui/tooltip';
 import {demoOperations,type MissionRequest} from '@/lib/operations-api';
+import {applyDisruption,createWorkspace,currentSession,patchSession,scenarioKey,switchScenario,type RecoverySession} from '@/lib/recovery-workspace';
 import {START,END,NOW,clock,noCrisis,stackedCrisis,teamLabels,workerAvailable,operationalRisk,recoveryChanges,capacitySeries,
   type Mission,type Schedule,type TaskResult,type Crisis,type Team,type ReviewRecord,type DemandLevel,type Week} from '@/lib/operations';
 import {parseDemandCSV,demandCSV,sampleDemand,downloadFile} from '@/demand-csv';
@@ -76,10 +77,15 @@ function TaskInspector({result,mission,onClose}:{result:TaskResult|null;mission:
 
 export default function CommandCenter(){
   const [view,setView]=useState<View>('mission');
-  const [config,setConfig]=useState<MissionRequest>({week:'event',level:'Medium',day:5,seed:42});
-  const [draftCrisis,setDraftCrisis]=useState<Crisis>(stackedCrisis),[applied,setApplied]=useState<Crisis>(noCrisis);
-  const [recoveryRequested,setRecoveryRequested]=useState(false),[selectedTask,setSelectedTask]=useState<TaskResult|null>(null);
-  const [manager,setManager]=useState(''),[notes,setNotes]=useState(''),[review,setReview]=useState<ReviewRecord|null>(null);
+  const [workspace,setWorkspace]=useState(()=>createWorkspace({week:'event',level:'Medium',day:5,seed:42}));
+  const config=workspace.config;
+  const {draftCrisis,applied,recoveryRequested,manager,notes,review}=currentSession(workspace);
+  const [selectedTask,setSelectedTask]=useState<TaskResult|null>(null);
+  function updateSession(update:Partial<RecoverySession>){setWorkspace(current=>patchSession(current,update));}
+  function setDraftCrisis(crisis:Crisis){updateSession({draftCrisis:crisis});}
+  function setReview(record:ReviewRecord|null){updateSession({review:record});}
+  function setManager(value:string){updateSession({manager:value});}
+  function setNotes(value:string){updateSession({notes:value});}
   const [dataOpen,setDataOpen]=useState(false),[dataError,setDataError]=useState(''),[notice,setNotice]=useState('');
   const loaded=useMemo(()=>demoOperations.loadMission(config),[config]);
   const mission=loaded.mission,original=loaded.original;
@@ -104,10 +110,18 @@ export default function CommandCenter(){
   },[view,config,applied]);
 
   function go(next:View){setView(next);setSelectedTask(null);window.scrollTo({top:0,behavior:'smooth'});}
-  function updateConfig(next:MissionRequest){setConfig(next);setApplied(noCrisis);setRecoveryRequested(false);setReview(null);setSelectedTask(null);setNotice('Scenario updated. Crisis results and prior review cleared.');}
-  function trigger(){setApplied({...draftCrisis,absentWorkerIds:[...draftCrisis.absentWorkerIds]});setRecoveryRequested(false);setReview(null);setSelectedTask(null);setNotice('Disruption applied. Original assignments retained; conflicts recalculated.');}
-  function resetCrisis(){setApplied(noCrisis);setRecoveryRequested(false);setReview(null);setSelectedTask(null);setNotice('Crisis cleared. Original mission restored.');}
-  function buildRecovery(){setRecoveryRequested(true);setReview(null);go('recovery');setNotice('Recovery candidate calculated. No workers have been notified.');}
+  function updateConfig(next:MissionRequest){
+    if(scenarioKey(next)===scenarioKey(config))return;
+    const saved=workspace.sessions[scenarioKey(next)];
+    setWorkspace(current=>switchScenario(current,next));setSelectedTask(null);
+    setNotice(saved?'Previous scenario restored, including its disruption settings and recovery status.':'New scenario selected. Calculate a recovery candidate for these conditions.');
+  }
+  function trigger(){
+    const next=applyDisruption(workspace);setWorkspace(next);setSelectedTask(null);
+    setNotice(next===workspace?'Disruption unchanged. Existing recovery and review retained.':'Disruption applied. Calculate a new recovery candidate for these conditions.');
+  }
+  function resetCrisis(){updateSession({applied:noCrisis,recoveryRequested:false,review:null});setSelectedTask(null);setNotice('Crisis cleared. Original mission restored.');}
+  function buildRecovery(){updateSession({recoveryRequested:true,review:null});go('recovery');setNotice('Recovery candidate calculated. No workers have been notified.');}
   function decide(status:'approved'|'rejected'){
     if(!recovery||!manager.trim())return;
     const record:ReviewRecord={id:`CP-${Date.now()}`,status,manager:manager.trim(),notes,timestamp:new Date().toISOString(),

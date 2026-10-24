@@ -1,4 +1,4 @@
-import {createMission,applyCrisis,scheduleTasks,evaluateOriginal,noCrisis,type Mission,type Schedule,type Crisis,type Week,type DemandLevel,type UploadedCount,type TaskRules,type Worker} from './operations';
+import {createMission,applyCrisis,scheduleTasks,evaluateOriginal,noCrisis,type Mission,type Schedule,type Crisis,type Week,type DemandLevel,type UploadedCount,type TaskRules,type Worker} from './operations.ts';
 
 /** DTOs for a future task-level FastAPI adapter. Existing weekly API remains separate. */
 export type MissionRequest = {week:Week;level:DemandLevel;day:number;seed:number;upload?:{name:string;rows:UploadedCount[]};rules?:TaskRules;workers?:Worker[]};
