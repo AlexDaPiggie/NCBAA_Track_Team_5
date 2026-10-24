@@ -119,6 +119,7 @@
 :root[data-theme="light"] .ops-now-line:before{background:#087b98}
 :root[data-theme="light"] .ops-task-block{background:#e5f4fa;border-color:#a3cddb;border-left-color:#087b98;color:#164b61}
 :root[data-theme="light"] .ops-task-block.complete{background:#e9f6ee;border-color:#abd5ba;border-left-color:#176c49;color:#245e3d}
+:root[data-theme="light"] .ops-task-block.recovered{background:#e3f5e9;border-color:#82c99c;border-left-color:#176c49;color:#245e3d}
 :root[data-theme="light"] .ops-task-block.fuel.assigned{background:#eaf1fa;border-color:#b7cbe2;border-left-color:#366c98;color:#254e76}
 :root[data-theme="light"] .ops-task-block.service.assigned{background:#e6f5f0;border-color:#b1d7c9;border-left-color:#23795d;color:#225e48}
 :root[data-theme="light"] .ops-task-block.conflict{background:repeating-linear-gradient(130deg,#ffe7ee,#ffe7ee 4px,#ffdbe5 4px,#ffdbe5 6px);border-color:#cc7c94;border-left-color:#a52a48;color:#8f2441}
