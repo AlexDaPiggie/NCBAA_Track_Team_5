@@ -11,6 +11,14 @@
 - Estimated labor is scheduled paid hours multiplied by illustrative role rates ($32 ramp, $35 fuel, $26 customer service). Breaks are assumed paid. Benefits, overtime premiums, and actual payroll rules are omitted. Both baseline and event rosters face the same event demand within each comparison.
 - Manager approval or rejection is saved in browser storage and can be downloaded. It does not dispatch workers.
 
+## Synthetic data shaped by historical timing
+
+- `backend/data/lax_super_bowl_week.csv` contains observed LAX commercial-airline records from February 7–13, 2022. The new optional generator reads valid actual arrivals and counts them by local hour.
+- `backend/data_generation/generate_synthetic_lax_timing_profile.py` converts those counts to hourly shares, then uses seeded random sampling to create `backend/data/synthetic_fbo_demand_lax_timing_profile.csv`.
+- This is a simple empirical profile, not a trained AI model. It generates 672 synthetic hourly rows: seven days × 24 hours × ordinary, low, medium, and high scenarios.
+- The 17-aircraft daily base, event multipliers, 4.5 passengers per aircraft, and 0.65 fuel-request chance are demo assumptions. Only the hourly timing shares come from the observed LAX airline data.
+- The source is commercial airline arrivals. It does not describe VNY, general aviation, FBO visits, or staffing demand. The synthetic output is a demonstration artifact and is not connected to the website planner. See [generation notes](../backend/data_generation/README.md) and the [pattern diagram](presentation/Synthetic_Data_Pattern_Diagram.png).
+
 ## Separate weekly FastAPI planner
 
 - Default demand, workers, service rates, task times, and wages are configurable demo assumptions or synthetic fixtures.
