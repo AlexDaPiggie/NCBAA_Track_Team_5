@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.env
+.env.local
+node_modules/
+.next/
+temp_question/
+.playwright-mcp/

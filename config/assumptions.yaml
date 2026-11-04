@@ -1,0 +1,72 @@
+# All values are ASSUMPTIONS (ASM), unverified with an aviation expert (UNV),
+# unless a `source` note says otherwise. Data built from them is SYNTHETIC.
+# Never present results derived from this file as real FBO performance.
+
+seed: 20260214
+
+window:
+  days: 7
+  day_labels: [Mon, Tue, Wed, Thu, Fri, Sat, Sun]
+  event_name: "Super Bowl LXI week (synthetic profile)"
+  game_day_index: 6            # ASM: game on last day of window
+
+demand:
+  base_daily_arrivals: 24      # ASM: ordinary-week aircraft arrivals per day
+  dow_factors: [1.0, 1.0, 1.05, 1.1, 1.15, 0.85, 0.8]   # ASM
+  hourly_shape:                # ASM: two arrival banks + floor, normalised
+    floor: 0.05
+    peaks:                     # [mean_hour, sd_hours, weight]
+      - [9, 2.5, 1.0]
+      - [16, 3.0, 1.2]
+  history_weeks: 8             # synthetic ordinary weeks used to train forecast
+  # Event uplift curve per day (ratio vs ordinary) at intensity 1.0. ASM.
+  event_day_curve: [1.0, 1.05, 1.2, 1.5, 1.9, 2.1, 1.5]
+  scenarios:                   # intensity scales (curve - 1). ASM.
+    ordinary: 0.0
+    low: 0.5
+    medium: 1.0
+    high: 1.6
+  event_sigma: 0.15            # ASM: extra log-uncertainty on event uplift
+
+service:                       # ASM + UNV: minutes of crew work per aircraft
+  ramp_min_arrival: 30
+  ramp_min_departure: 20
+  fuel_min: 20                 # per departing aircraft that fuels
+  fuel_prob: 0.7
+  cs_min_arrival: 20           # customer service
+  cs_min_departure: 10
+  departure_lag_hours: 3       # departure workload lags arrival
+  # Parking as workload driver (not a parking product):
+  apron_capacity: 18           # aircraft before repositioning work starts
+  apron_dwell_hours: 8
+  reposition_min_per_arrival_at_full_apron: 15   # extra ramp minutes per arrival as apron saturates
+  target_utilization: 0.8
+  seat_tolerance: 0.05
+
+staffing:
+  roles: [ramp, fuel, cs]
+  min_seats:                   # ASM
+    day:   {ramp: 2, fuel: 1, cs: 1}
+    night: {ramp: 1, fuel: 0, cs: 1}
+  night_hours: [0, 1, 2, 3, 4, 5]
+  pool_cap: {ramp: 30, fuel: 14, cs: 14}   # ASM: workers available per role
+  shift_hours: 8
+  shift_start_step: 2          # allowed start hours every N hours
+  break_offset_hours: 4        # 30 min break at this hour into shift
+  weekly_shift_cap: 5          # 40 h
+  min_rest_hours: 8
+  wage_per_hour: {ramp: 30, fuel: 32, cs: 25}   # ASM: illustrative USD
+  shortage_penalty: 1000
+  solver_seconds: 8
+
+planning:
+  # Plan to expected + z*(p90 - expected). 0 = lean, 1 = protected. ASM default.
+  risk_z: 0.5
+
+risk:
+  sims: 400
+  daily_sigma: 0.12            # ASM: day-level demand uncertainty
+
+copilot:
+  model_env: OPENROUTER_MODEL
+  default_model: "anthropic/claude-sonnet-5.5"
